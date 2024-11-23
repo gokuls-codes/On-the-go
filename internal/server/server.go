@@ -1,13 +1,17 @@
 package server
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/jackc/pgx/v5"
+	"github.com/labstack/echo/v4"
+)
 
 type Server struct {
-	Port string
+	port string
+	conn *pgx.Conn
 }
 
-func NewServer(port string) *Server {
-	return &Server{Port: port}
+func NewServer(port string, conn *pgx.Conn) *Server {
+	return &Server{port: port, conn: conn}
 }
 
 func (s *Server) Start() {
@@ -17,5 +21,5 @@ func (s *Server) Start() {
 		return c.String(200, "Hello, World!")
 	})
 
-	e.Logger.Fatal(e.Start(":" + s.Port))
+	e.Logger.Fatal(e.Start(":" + s.port))
 }

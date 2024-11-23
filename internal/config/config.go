@@ -9,6 +9,7 @@ import (
 
 type config struct {
 	Port string
+	PostgresURL string
 }
 
 
@@ -19,7 +20,10 @@ func NewConfig() *config {
 		log.Fatal("Error loading .env file")
 	}
 
-	return &config{Port: getEnv("PORT", "8080")}
+	return &config{
+		Port: getEnv("PORT", "8080"),
+		PostgresURL: getEnv("POSTGRES_URL", ""),
+	}
 }
 
 func getEnv(key, defaultValue string) string {
