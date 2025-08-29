@@ -4,6 +4,7 @@ import (
 	"github.com/gokuls-codes/on-the-go/internal/services/docker"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates"
+	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -26,16 +27,20 @@ func (s *Server) Start() {
 
 	e.Static("/static", "static")
 
-	baseComponent := templates.Base()
 	e.GET("/", func(c echo.Context) error {
-		return utils.Render(c, baseComponent)
+		return utils.Render(c, templates.Base())
 	})
 
 	e.GET("/hello", func(c echo.Context) error {
 		return c.String(200, "Hello, World!")
 	})
 
-	dockerGroup := e.Group("/docker")
+	dashboardGroup := e.Group("/dashboard")
+	dashboardGroup.GET("", func(c echo.Context) error {
+		return utils.Render(c, pages.Dashboard())
+	})
+
+	dockerGroup := dashboardGroup.Group("/docker")
 
 	dockerHandler := docker.Handler{}
 	dockerHandler.RegisterRoutes(dockerGroup)

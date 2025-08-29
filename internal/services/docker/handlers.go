@@ -1,8 +1,8 @@
 package docker
 
 import (
-	"fmt"
-
+	"github.com/gokuls-codes/on-the-go/internal/utils"
+	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
 	"github.com/labstack/echo/v4"
 	"github.com/moby/moby/api/types/container"
 	"github.com/moby/moby/api/types/network"
@@ -23,12 +23,13 @@ func (h *Handler) listContainers(c echo.Context) error {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
-	resp := new([]string)
-	for _, container := range containers {
-		*resp = append(*resp, fmt.Sprintf("%s %s (status: %s)\n", container.Names[0], container.Image, container.Status))
-	}
+	// resp := new([]string)
+	// for _, container := range containers {
+	// 	*resp = append(*resp, fmt.Sprintf("%s %s (status: %s)\n", container.Names[0], container.Image, container.Status))
+	// }
 
-	return c.JSON(200, resp)
+	// return c.JSON(200, resp)
+	return utils.Render(c, pages.Containers(containers))
 }
 
 func (h *Handler) createContainer(c echo.Context) error {
@@ -43,7 +44,7 @@ func (h *Handler) createContainer(c echo.Context) error {
 	_, err = apiClient.ContainerCreate(
 		c.Request().Context(),
 		&container.Config{
-			Image: "alpine",
+			Image: "hello-world",
 		},
 		&container.HostConfig{},
 		&network.NetworkingConfig{},

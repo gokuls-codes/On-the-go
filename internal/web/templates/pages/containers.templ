@@ -1,0 +1,17 @@
+package pages
+
+import "github.com/gokuls-codes/on-the-go/internal/web/templates"
+import "github.com/moby/moby/api/types/container"
+
+templ Containers(containers []container.Summary) {
+    @templates.Base() {
+        <main class="p-4">
+            <h2>Containers</h2>
+            <ul>
+                for _, item := range containers {
+                <li>{item.Names[0]} - {item.Image} ({item.Status})</li>
+                }
+            </ul>
+        </main>
+    }
+}
