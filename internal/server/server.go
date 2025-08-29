@@ -2,6 +2,8 @@ package server
 
 import (
 	"github.com/gokuls-codes/on-the-go/internal/services/docker"
+	"github.com/gokuls-codes/on-the-go/internal/utils"
+	"github.com/gokuls-codes/on-the-go/internal/web/templates"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -21,6 +23,13 @@ func (s *Server) Start() {
 	
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	e.Static("/static", "static")
+
+	baseComponent := templates.Base()
+	e.GET("/", func(c echo.Context) error {
+		return utils.Render(c, baseComponent)
+	})
 
 	e.GET("/hello", func(c echo.Context) error {
 		return c.String(200, "Hello, World!")
