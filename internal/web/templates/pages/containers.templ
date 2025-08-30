@@ -8,8 +8,8 @@ templ Containers(containers []container.Summary) {
         <main class="p-4">
             <h2>Containers</h2>
             <ul>
-                for _, item := range containers {
-                <li>{item.Names[0]} - {item.Image} ({item.Status})</li>
+                for index, item := range containers {
+                <li>{index + 1} : {item.Names[0]} - {item.Image} ({item.Status})</li>
                 }
             </ul>
         </main>
