@@ -1,0 +1,7 @@
+{
+  "componentsDir": "internal/web/templates/components",
+  "utilsDir": "internal/utils",
+  "moduleName": "github.com/gokuls-codes/on-the-go",
+  "jsDir": "static",
+  "jsPublicPath": "/static"
+}

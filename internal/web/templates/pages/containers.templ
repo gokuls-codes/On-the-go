@@ -2,16 +2,46 @@ package pages
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
 import "github.com/moby/moby/api/types/container"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/table"
 
 templ Containers(containers []container.Summary) {
     @templates.Base() {
         <main class="p-4">
             <h2>Containers</h2>
-            <ul>
-                for index, item := range containers {
-                <li>{index + 1} : {item.Names[0]} - {item.Image} ({item.Status})</li>
+            @table.Table() {
+                @table.Header() {
+                    @table.Row() {
+                        @table.Head() {
+                            S. No.
+                        }
+                        @table.Head() {
+                            Name
+                        }
+                        @table.Head() {
+                            Image
+                        }
+                        @table.Head() {
+                            Status
+                        }
+                    }
                 }
-            </ul>
+                for index, item := range containers {
+                    @table.Row() {
+                        @table.Cell() {
+                            {index + 1}
+                        }
+                        @table.Cell() {
+                            {item.Names[0]}
+                        }
+                        @table.Cell() {
+                            {item.Image}
+                        }
+                        @table.Cell() {
+                            {item.Status}
+                        }
+                    }
+                }
+            }
         </main>
     }
 }
