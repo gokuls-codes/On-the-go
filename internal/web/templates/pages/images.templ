@@ -1,0 +1,55 @@
+package pages
+import "github.com/gokuls-codes/on-the-go/internal/web/templates"
+import "github.com/moby/moby/api/types/image"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/table"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
+
+templ Images(images []image.Summary) {
+    @templates.DashboardLayout() {        
+        <main class="p-8 min-h-screen flex-1 space-y-8">
+            <div class=" w-full flex justify-between items-center">
+                <h2 class=" text-2xl font-bold">Images</h2>
+                @button.Button(button.Props{
+                    Href: "/dashboard/images/create",
+                }) {
+                    <i class="material-icons">add</i>
+                    <span>Add Image</span>
+                }
+            </div>
+                @table.Table() {
+                    @table.Header() {
+                        @table.Row() {
+                            @table.Head() {
+                                S. No.
+                            }
+                            @table.Head() {
+                                ID
+                            }
+                            @table.Head() {
+                                Size
+                            }
+                            @table.Head() {
+                                RepoTags
+                            }
+                        }
+                    }
+                    for index, item := range images {
+                        @table.Row() {
+                            @table.Cell() {
+                                {index + 1}
+                            }
+                            @table.Cell() {
+                                {item.ID}
+                            }
+                            @table.Cell() {
+                                {item.Size}
+                            }
+                            @table.Cell() {
+                                {item.RepoTags[0]}
+                            }
+                        }
+                    }
+                }
+        </main>
+    }
+}

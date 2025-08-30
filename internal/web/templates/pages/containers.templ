@@ -3,11 +3,20 @@ package pages
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
 import "github.com/moby/moby/api/types/container"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/table"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
 
 templ Containers(containers []container.Summary) {
-    @templates.Base() {
-        <main class="p-4">
-            <h2>Containers</h2>
+    @templates.DashboardLayout() {   
+        <main class="p-8 min-h-screen flex-1 space-y-8">
+            <div class=" w-full flex justify-between items-center">
+                <h2 class=" text-2xl font-bold">Containers</h2>
+                @button.Button(button.Props{
+                    Href: "/dashboard/containers/create",
+                }) {
+                    <i class="material-icons">add</i>
+                    <span>Add Container</span>
+                }
+            </div>
             @table.Table() {
                 @table.Header() {
                     @table.Row() {

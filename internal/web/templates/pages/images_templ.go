@@ -9,11 +9,11 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
-import "github.com/moby/moby/api/types/container"
+import "github.com/moby/moby/api/types/image"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/table"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
 
-func Containers(containers []container.Summary) templ.Component {
+func Images(images []image.Summary) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -46,7 +46,7 @@ func Containers(containers []container.Summary) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"p-8 min-h-screen flex-1 space-y-8\"><div class=\" w-full flex justify-between items-center\"><h2 class=\" text-2xl font-bold\">Containers</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"p-8 min-h-screen flex-1 space-y-8\"><div class=\" w-full flex justify-between items-center\"><h2 class=\" text-2xl font-bold\">Images</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -62,14 +62,14 @@ func Containers(containers []container.Summary) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<i class=\"material-icons\">add</i> <span>Add Container</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<i class=\"material-icons\">add</i> <span>Add Image</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
 			templ_7745c5c3_Err = button.Button(button.Props{
-				Href: "/dashboard/containers/create",
+				Href: "/dashboard/images/create",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -152,7 +152,7 @@ func Containers(containers []container.Summary) templ.Component {
 								}()
 							}
 							ctx = templ.InitializeContext(ctx)
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "Name")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "ID")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -178,7 +178,7 @@ func Containers(containers []container.Summary) templ.Component {
 								}()
 							}
 							ctx = templ.InitializeContext(ctx)
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "Image")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "Size")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -204,7 +204,7 @@ func Containers(containers []container.Summary) templ.Component {
 								}()
 							}
 							ctx = templ.InitializeContext(ctx)
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "Status")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "RepoTags")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -226,7 +226,7 @@ func Containers(containers []container.Summary) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				for index, item := range containers {
+				for index, item := range images {
 					templ_7745c5c3_Var11 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 						templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 						templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -254,7 +254,7 @@ func Containers(containers []container.Summary) templ.Component {
 							var templ_7745c5c3_Var13 string
 							templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(index + 1)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers.templ`, Line: 40, Col: 38}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images.templ`, Line: 39, Col: 42}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 							if templ_7745c5c3_Err != nil {
@@ -283,9 +283,9 @@ func Containers(containers []container.Summary) templ.Component {
 							}
 							ctx = templ.InitializeContext(ctx)
 							var templ_7745c5c3_Var15 string
-							templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(item.Names[0])
+							templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(item.ID)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers.templ`, Line: 43, Col: 42}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images.templ`, Line: 42, Col: 40}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 							if templ_7745c5c3_Err != nil {
@@ -314,9 +314,9 @@ func Containers(containers []container.Summary) templ.Component {
 							}
 							ctx = templ.InitializeContext(ctx)
 							var templ_7745c5c3_Var17 string
-							templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(item.Image)
+							templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(item.Size)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers.templ`, Line: 46, Col: 39}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images.templ`, Line: 45, Col: 42}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 							if templ_7745c5c3_Err != nil {
@@ -345,9 +345,9 @@ func Containers(containers []container.Summary) templ.Component {
 							}
 							ctx = templ.InitializeContext(ctx)
 							var templ_7745c5c3_Var19 string
-							templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status)
+							templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(item.RepoTags[0])
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers.templ`, Line: 49, Col: 40}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images.templ`, Line: 48, Col: 49}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 							if templ_7745c5c3_Err != nil {

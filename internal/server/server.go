@@ -37,13 +37,11 @@ func (s *Server) Start() {
 
 	dashboardGroup := e.Group("/dashboard")
 	dashboardGroup.GET("", func(c echo.Context) error {
-		return utils.Render(c, pages.Dashboard())
+		return utils.Render(c, pages.DashboardPage())
 	})
-
-	dockerGroup := dashboardGroup.Group("/docker")
-
+	
 	dockerHandler := docker.Handler{}
-	dockerHandler.RegisterRoutes(dockerGroup)
+	dockerHandler.RegisterRoutes(dashboardGroup)
 
 	e.Logger.Fatal(e.Start(":" + s.port))
 }
