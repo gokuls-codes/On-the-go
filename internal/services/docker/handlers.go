@@ -3,7 +3,6 @@ package docker
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
@@ -122,7 +121,7 @@ func (h *Handler) createProject(c echo.Context) error {
 			fmt.Fprintf(c.Response().Writer, "<div>%s</div>", stream)
 			c.Response().Flush()
 		}
-		time.Sleep(200 * time.Millisecond)
+		// time.Sleep(200 * time.Millisecond)
 	}
 	return nil
 }
