@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
 	"github.com/labstack/echo/v4"
@@ -112,7 +113,7 @@ func (h *Handler) createProject(c echo.Context) error {
 
 	buildOptions := build.ImageBuildOptions{
 		Dockerfile: "Dockerfile",
-		Tags: []string{"test-project-image"},
+		Tags: []string{"test-docker-project"},
 		Remove: true,
 	}
 
@@ -134,5 +135,36 @@ func (h *Handler) createProject(c echo.Context) error {
 		}
 		// time.Sleep(200 * time.Millisecond)
 	}
+
+	containerResp, err := apiClient.ContainerCreate(
+		c.Request().Context(),
+		&container.Config{
+			Image: "test-docker-project",
+		},
+		&container.HostConfig{
+			PortBindings: nat.PortMap{
+				nat.Port("3000/tcp"): []nat.PortBinding{
+					{
+						HostIP:   "0.0.0.0",
+						HostPort: "3000",
+					},
+				},
+			},
+		},
+		&network.NetworkingConfig{
+		},
+		nil, "",
+	)
+
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	err = apiClient.ContainerStart(c.Request().Context(), containerResp.ID, container.StartOptions{})
+	
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
 	return nil
 }

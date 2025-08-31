@@ -7,5 +7,5 @@ type Handler struct {
 }
 
 func (h *Handler) RegisterRoutes(group *echo.Group) {
-	group.POST("", h.gitPush)
+	group.POST("/webhooks", h.gitPush)
 }
