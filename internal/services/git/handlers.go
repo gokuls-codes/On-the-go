@@ -2,7 +2,6 @@ package git
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os/exec"
 
@@ -101,25 +100,25 @@ func (h *Handler) gitPush(c echo.Context) error {
 		Remove: true,
 	}
 
-	response, err := apiClient.ImageBuild(context.Background(), buildContext, buildOptions)
+	_, err = apiClient.ImageBuild(context.Background(), buildContext, buildOptions)
 
 	if err != nil {
 		fmt.Println("Error building image:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
-	decoder := json.NewDecoder(response.Body)
-	for decoder.More() {
-		var msg map[string]interface{}
-		if err := decoder.Decode(&msg); err != nil {
-			return c.JSON(500, map[string]string{"error": err.Error()})
-		}
-		if stream, ok := msg["stream"].(string); ok {
-			fmt.Println(c.Response().Writer, "<div>%s</div>", stream)
-			c.Response().Flush()
-		}
-		// time.Sleep(200 * time.Millisecond)
-	}
+	// decoder := json.NewDecoder(response.Body)
+	// for decoder.More() {
+	// 	var msg map[string]interface{}
+	// 	if err := decoder.Decode(&msg); err != nil {
+	// 		return c.JSON(500, map[string]string{"error": err.Error()})
+	// 	}
+	// 	if stream, ok := msg["stream"].(string); ok {
+	// 		fmt.Println(c.Response().Writer, "<div>%s</div>", stream)
+	// 		c.Response().Flush()
+	// 	}
+	// 	// time.Sleep(200 * time.Millisecond)
+	// }
 
 	containerResp, err := apiClient.ContainerCreate(
 		context.Background(),
