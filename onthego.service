@@ -1,0 +1,16 @@
+[Unit]
+Description=On the Go Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/projects/On-the-go
+Environment="PATH=/usr/local/go/bin:/usr/bin:/bin"
+ExecStart=/bin/bash -c 'make run'
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
