@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
 
-func DashboardPage() templ.Component {
+func CreateContainerPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -44,7 +44,7 @@ func DashboardPage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"p-8 min-h-screen flex-1 space-y-8\"><div class=\" w-full flex justify-between items-center\"><h2 class=\" text-2xl font-bold\">Dashboard</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"p-8 min-h-screen flex-1 space-y-8\"><div class=\" w-full flex justify-between items-center\"><h2 class=\" text-2xl font-bold\">Create container</h2></div><div id=\"response\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -60,7 +60,7 @@ func DashboardPage() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<i class=\"material-icons\">add</i> <span>New Project</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "Create")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -68,15 +68,15 @@ func DashboardPage() templ.Component {
 			})
 			templ_7745c5c3_Err = button.Button(button.Props{
 				Attributes: templ.Attributes{
-					"hx-post":   "/dashboard/projects",
-					"hx-target": "#response",
-					"hx-swap":   "afterbegin",
+					"hx-post":    "/dashboard/containers",
+					"hx-trigger": "click",
+					"hx-target":  "#response",
 				},
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div id=\"response\"></div></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

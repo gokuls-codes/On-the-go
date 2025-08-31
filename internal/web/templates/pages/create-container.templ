@@ -1,0 +1,24 @@
+package pages
+
+import "github.com/gokuls-codes/on-the-go/internal/web/templates"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
+
+templ CreateContainerPage() {
+    @templates.DashboardLayout() {   
+        <main class="p-8 min-h-screen flex-1 space-y-8">
+            <div class=" w-full flex justify-between items-center">
+                <h2 class=" text-2xl font-bold">Create container</h2>
+            </div>
+            <div id="response"></div>
+            @button.Button(button.Props{
+                Attributes: templ.Attributes{
+                    "hx-post": "/dashboard/containers",
+                    "hx-trigger": "click",
+                    "hx-target": "#response",
+                },
+            }) {
+                Create
+            }
+        </main>
+    }
+}

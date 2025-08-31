@@ -1,9 +1,26 @@
 package pages
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
 
 templ DashboardPage() {
     @templates.DashboardLayout() {
-        <h2 class=" text-2xl font-bold">Dashboard</h2>
+        <main class="p-8 min-h-screen flex-1 space-y-8">
+            <div class=" w-full flex justify-between items-center">
+                <h2 class=" text-2xl font-bold">Dashboard</h2>
+                @button.Button(button.Props{
+                    Attributes: templ.Attributes{
+                        "hx-post": "/dashboard/projects",
+                        "hx-target": "#response",
+                        "hx-swap": "afterbegin",
+                    },
+                }) {
+                    <i class="material-icons">add</i>
+                    <span>New Project</span>
+                }
+            </div>
+            <div id="response">
+            </div>
+        </main>
     }
 }

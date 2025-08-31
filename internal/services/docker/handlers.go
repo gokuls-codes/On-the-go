@@ -1,9 +1,14 @@
 package docker
 
 import (
+	"encoding/json"
+	"fmt"
+	"time"
+
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
 	"github.com/labstack/echo/v4"
+	"github.com/moby/moby/api/types/build"
 	"github.com/moby/moby/api/types/container"
 	"github.com/moby/moby/api/types/image"
 	"github.com/moby/moby/api/types/network"
@@ -75,4 +80,49 @@ func (h *Handler) listImages(c echo.Context) error {
 	}
 
 	return utils.Render(c, pages.Images(images))
+}
+
+func (h *Handler) createContainerPage(c echo.Context) error {
+	return utils.Render(c, pages.CreateContainerPage())
+}
+
+func (h *Handler) createProject(c echo.Context) error {
+
+	apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": "Failed to create Docker client"})
+	}
+
+	defer apiClient.Close()
+
+	buildContext, err := utils.TarDirectory("../test-docker-project")
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	buildOptions := build.ImageBuildOptions{
+		Dockerfile: "Dockerfile",
+		Tags: []string{"test-project-image"},
+		Remove: true,
+	}
+
+	response, err := apiClient.ImageBuild(c.Request().Context(), buildContext, buildOptions)
+
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	decoder := json.NewDecoder(response.Body)
+	for decoder.More() {
+		var msg map[string]interface{}
+		if err := decoder.Decode(&msg); err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+		if stream, ok := msg["stream"].(string); ok {
+			fmt.Fprintf(c.Response().Writer, "<div>%s</div>", stream)
+			c.Response().Flush()
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+	return nil
 }

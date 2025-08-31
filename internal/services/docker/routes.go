@@ -8,6 +8,9 @@ type Handler struct{
 
 func (h *Handler) RegisterRoutes(group *echo.Group) {
 	group.GET("/containers", h.listContainers)
-	group.GET("/containers/new", h.createContainer)
+	group.GET("/containers/create", h.createContainerPage)
+	group.POST("/containers", h.createContainer)
 	group.GET("/images", h.listImages)
+
+	group.POST("/projects", h.createProject)
 }
