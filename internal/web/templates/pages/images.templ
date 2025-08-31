@@ -45,7 +45,11 @@ templ Images(images []image.Summary) {
                                 {item.Size}
                             }
                             @table.Cell() {
-                                {item.RepoTags[0]}
+                                if len(item.RepoTags) != 0 {
+                                    {item.RepoTags[0]}
+                                } else {
+                                    {"No Tag"}
+                                }
                             }
                         }
                     }
