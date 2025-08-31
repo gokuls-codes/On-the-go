@@ -81,6 +81,32 @@ func (h *Handler) gitPush(c echo.Context) error {
 		// time.Sleep(200 * time.Millisecond)
 	}
 
+	containers, err := apiClient.ContainerList(c.Request().Context(), container.ListOptions{})
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	var containerId string
+
+	for _, container := range containers {
+		if container.Image == "test-docker-project" {
+			containerId = container.ID
+			break
+		}
+	}
+
+	if containerId != "" {
+		err = apiClient.ContainerStop(c.Request().Context(), containerId, container.StopOptions{})
+		if err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+
+		err = apiClient.ContainerRemove(c.Request().Context(), containerId, container.RemoveOptions{})
+		if err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+	}
+
 	containerResp, err := apiClient.ContainerCreate(
 		c.Request().Context(),
 		&container.Config{
