@@ -24,5 +24,9 @@ func (h *Handler) gitPush(c echo.Context) error {
 	jsonString := string(jsonBytes)
 
 	fmt.Println("Git Push Payload:", jsonString)
+
+	headers := c.Request().Header
+
+	fmt.Println("Headers:", headers)
 	return c.JSON(200, map[string]string{"message": "Git push successful"})
 }

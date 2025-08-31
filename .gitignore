@@ -5,3 +5,5 @@ static/styles.css
 temp/
 
 node_modules/
+
+payload.json
