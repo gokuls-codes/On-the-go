@@ -3,6 +3,7 @@ package docker
 import (
 	"encoding/json"
 	"fmt"
+	"os/exec"
 
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
@@ -86,6 +87,16 @@ func (h *Handler) createContainerPage(c echo.Context) error {
 }
 
 func (h *Handler) createProject(c echo.Context) error {
+
+	repoURL := "https://github.com/gokuls-codes/test-docker-project.git"
+	targetDir := "../"
+
+	cmd := exec.Command("git", "clone", repoURL, targetDir + "test-docker-project")
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": fmt.Sprintf("Git clone failed: %s", string(output))})
+	}
 
 	apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
