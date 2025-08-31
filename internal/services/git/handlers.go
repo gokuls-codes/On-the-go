@@ -16,31 +16,38 @@ import (
 
 
 func (h *Handler) gitPush(c echo.Context) error {
-	var payload interface{}
+	var payload struct{
+		Repository struct{
+			Name string `json:"name"`
+		} `json:"repository"`
+	}
 	err := (&echo.DefaultBinder{}).BindBody(c, &payload)
 
 	if err != nil {
 		return c.JSON(400, map[string]string{"error": err.Error()})
 	}
 
-	jsonBytes, err := json.MarshalIndent(payload, "", "  ")
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": "Failed to marshal payload"})
-	}
+	fmt.Println("Repository: ", payload.Repository.Name)
 
-	jsonString := string(jsonBytes)
+	// jsonBytes, err := json.MarshalIndent(payload, "", "  ")
+	// if err != nil {
+	// 	return c.JSON(500, map[string]string{"error": "Failed to marshal payload"})
+	// }
 
-	fmt.Println("Git Push Payload:", jsonString)
+	// jsonString := string(jsonBytes)
+
+	// fmt.Println("Git Push Payload:", jsonBytes)
 
 	headers := c.Request().Header
 
-	fmt.Println("Headers:", headers)
+	fmt.Println("Headers:", headers.Get("X-Hub-Signature"))
 
 	cmd := exec.Command("git", "pull")
     cmd.Dir = "../test-docker-project"
 
     output, err := cmd.CombinedOutput()
     if err != nil {
+		fmt.Println("Error executing git pull:", string(output))
         return c.JSON(500, map[string]string{"error": fmt.Sprintf("Error executing git pull: %s", string(output))})
     }
 
@@ -50,36 +57,6 @@ func (h *Handler) gitPush(c echo.Context) error {
 	}
 
 	defer apiClient.Close()
-
-	buildContext, err := utils.TarDirectory("../test-docker-project")
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
-	}
-
-	buildOptions := build.ImageBuildOptions{
-		Dockerfile: "Dockerfile",
-		Tags: []string{"test-docker-project"},
-		Remove: true,
-	}
-
-	response, err := apiClient.ImageBuild(c.Request().Context(), buildContext, buildOptions)
-
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
-	}
-
-	decoder := json.NewDecoder(response.Body)
-	for decoder.More() {
-		var msg map[string]interface{}
-		if err := decoder.Decode(&msg); err != nil {
-			return c.JSON(500, map[string]string{"error": err.Error()})
-		}
-		if stream, ok := msg["stream"].(string); ok {
-			fmt.Fprintf(c.Response().Writer, "<div>%s</div>", stream)
-			c.Response().Flush()
-		}
-		// time.Sleep(200 * time.Millisecond)
-	}
 
 	containers, err := apiClient.ContainerList(c.Request().Context(), container.ListOptions{})
 	if err != nil {
@@ -95,16 +72,52 @@ func (h *Handler) gitPush(c echo.Context) error {
 		}
 	}
 
+	fmt.Println("Found existing container ID:", containerId)
+
 	if containerId != "" {
 		err = apiClient.ContainerStop(c.Request().Context(), containerId, container.StopOptions{})
 		if err != nil {
+			fmt.Println("Error stopping container:", err)
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
 
 		err = apiClient.ContainerRemove(c.Request().Context(), containerId, container.RemoveOptions{})
 		if err != nil {
+			fmt.Println("Error removing container:", err)
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
+	}
+
+	buildContext, err := utils.TarDirectory("../test-docker-project")
+	if err != nil {
+		fmt.Println("Error creating build context:", err)
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	buildOptions := build.ImageBuildOptions{
+		Dockerfile: "Dockerfile",
+		Tags: []string{"test-docker-project"},
+		Remove: true,
+	}
+
+	response, err := apiClient.ImageBuild(c.Request().Context(), buildContext, buildOptions)
+
+	if err != nil {
+		fmt.Println("Error building image:", err)
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	decoder := json.NewDecoder(response.Body)
+	for decoder.More() {
+		var msg map[string]interface{}
+		if err := decoder.Decode(&msg); err != nil {
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+		if stream, ok := msg["stream"].(string); ok {
+			fmt.Println(c.Response().Writer, "<div>%s</div>", stream)
+			c.Response().Flush()
+		}
+		// time.Sleep(200 * time.Millisecond)
 	}
 
 	containerResp, err := apiClient.ContainerCreate(
@@ -128,12 +141,14 @@ func (h *Handler) gitPush(c echo.Context) error {
 	)
 
 	if err != nil {
+		fmt.Println("Error creating container:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
 	err = apiClient.ContainerStart(c.Request().Context(), containerResp.ID, container.StartOptions{})
 	
 	if err != nil {
+		fmt.Println("Error starting container:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
