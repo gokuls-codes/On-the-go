@@ -130,7 +130,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 				nat.Port("3000/tcp"): []nat.PortBinding{
 					{
 						HostIP:   "0.0.0.0",
-						HostPort: "3000",
+						HostPort: "8888",
 					},
 				},
 			},
