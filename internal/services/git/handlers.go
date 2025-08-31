@@ -1,6 +1,7 @@
 package git
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -58,7 +59,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	defer apiClient.Close()
 
-	containers, err := apiClient.ContainerList(c.Request().Context(), container.ListOptions{})
+	containers, err := apiClient.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
@@ -75,13 +76,13 @@ func (h *Handler) gitPush(c echo.Context) error {
 	fmt.Println("Found existing container ID:", containerId)
 
 	if containerId != "" {
-		err = apiClient.ContainerStop(c.Request().Context(), containerId, container.StopOptions{})
+		err = apiClient.ContainerStop(context.Background(), containerId, container.StopOptions{})
 		if err != nil {
 			fmt.Println("Error stopping container:", err)
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
 
-		err = apiClient.ContainerRemove(c.Request().Context(), containerId, container.RemoveOptions{})
+		err = apiClient.ContainerRemove(context.Background(), containerId, container.RemoveOptions{})
 		if err != nil {
 			fmt.Println("Error removing container:", err)
 			return c.JSON(500, map[string]string{"error": err.Error()})
@@ -100,7 +101,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 		Remove: true,
 	}
 
-	response, err := apiClient.ImageBuild(c.Request().Context(), buildContext, buildOptions)
+	response, err := apiClient.ImageBuild(context.Background(), buildContext, buildOptions)
 
 	if err != nil {
 		fmt.Println("Error building image:", err)
@@ -121,7 +122,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 	}
 
 	containerResp, err := apiClient.ContainerCreate(
-		c.Request().Context(),
+		context.Background(),
 		&container.Config{
 			Image: "test-docker-project",
 		},
@@ -145,7 +146,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
-	err = apiClient.ContainerStart(c.Request().Context(), containerResp.ID, container.StartOptions{})
+	err = apiClient.ContainerStart(context.Background(), containerResp.ID, container.StartOptions{})
 	
 	if err != nil {
 		fmt.Println("Error starting container:", err)
