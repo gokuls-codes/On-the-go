@@ -153,8 +153,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 		return
 		}
 		if stream, ok := msg["stream"].(string); ok {
-			log.Println(c.Response().Writer, "<div>%s</div>", stream)
-			c.Response().Flush()
+			log.Println(stream)
 		}
 		// time.Sleep(200 * time.Millisecond)
 	}
