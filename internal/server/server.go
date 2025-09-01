@@ -1,6 +1,8 @@
 package server
 
 import (
+	"database/sql"
+
 	"github.com/gokuls-codes/on-the-go/internal/services/docker"
 	"github.com/gokuls-codes/on-the-go/internal/services/git"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
@@ -12,10 +14,11 @@ import (
 
 type Server struct {
 	port string
+	db *sql.DB
 }
 
-func NewServer(port string) *Server {
-	return &Server{port: port}
+func NewServer(port string, db *sql.DB) *Server {
+	return &Server{port: port, db: db}
 }
 
 func (s *Server) Start() {

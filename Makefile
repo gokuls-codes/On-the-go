@@ -15,3 +15,11 @@ run:
 clean:
 	@echo "Cleaning..."
 	@rm -rf temp/*
+
+migrate-up:
+	@echo "Migrating up..."
+	@migrate -database "sqlite3://db.sqlite3" -path db/migration -verbose up
+
+migrate-down:
+	@echo "Migrating down..."
+	@migrate -database "sqlite3://db.sqlite3" -path db/migration -verbose down

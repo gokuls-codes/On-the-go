@@ -9,3 +9,5 @@ node_modules/
 payload.json
 
 headers.txt
+
+db.sqlite3
