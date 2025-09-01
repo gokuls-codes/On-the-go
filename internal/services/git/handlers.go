@@ -3,6 +3,7 @@ package git
 import (
 	"context"
 	"fmt"
+	"log"
 	"os/exec"
 
 	"github.com/docker/go-connections/nat"
@@ -27,7 +28,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 		return c.JSON(400, map[string]string{"error": err.Error()})
 	}
 
-	fmt.Println("Repository: ", payload.Repository.Name)
+	log.Println("Repository: ", payload.Repository.Name)
 
 	// jsonBytes, err := json.MarshalIndent(payload, "", "  ")
 	// if err != nil {
@@ -36,20 +37,21 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	// jsonString := string(jsonBytes)
 
-	// fmt.Println("Git Push Payload:", jsonBytes)
+	// log.Println("Git Push Payload:", jsonBytes)
 
 	headers := c.Request().Header
 
-	fmt.Println("Headers:", headers.Get("X-Hub-Signature"))
+	log.Println("Headers:", headers.Get("X-Hub-Signature"))
 
 	cmd := exec.Command("git", "pull")
     cmd.Dir = "../test-docker-project"
 
     output, err := cmd.CombinedOutput()
     if err != nil {
-		fmt.Println("Error executing git pull:", string(output))
+		log.Println("Error executing git pull:", string(output))
         return c.JSON(500, map[string]string{"error": fmt.Sprintf("Error executing git pull: %s", string(output))})
     }
+	log.Println("Git pull successful\nOutput:", string(output))
 
 	apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -72,25 +74,27 @@ func (h *Handler) gitPush(c echo.Context) error {
 		}
 	}
 
-	fmt.Println("Found existing container ID:", containerId)
+	log.Println("Found existing container ID:", containerId)
 
 	if containerId != "" {
 		err = apiClient.ContainerStop(context.Background(), containerId, container.StopOptions{})
 		if err != nil {
-			fmt.Println("Error stopping container:", err)
+			log.Println("Error stopping container:", err)
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
+		log.Println("Container stopped successfully")
 
 		err = apiClient.ContainerRemove(context.Background(), containerId, container.RemoveOptions{})
 		if err != nil {
-			fmt.Println("Error removing container:", err)
+			log.Println("Error removing container:", err)
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
+		log.Println("Container removed successfully")
 	}
 
 	buildContext, err := utils.TarDirectory("../test-docker-project")
 	if err != nil {
-		fmt.Println("Error creating build context:", err)
+		log.Println("Error creating build context:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
@@ -103,9 +107,11 @@ func (h *Handler) gitPush(c echo.Context) error {
 	_, err = apiClient.ImageBuild(context.Background(), buildContext, buildOptions)
 
 	if err != nil {
-		fmt.Println("Error building image:", err)
+		log.Println("Error building image:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
+	
+	log.Println("Image built successfully")
 
 	// decoder := json.NewDecoder(response.Body)
 	// for decoder.More() {
@@ -114,7 +120,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 	// 		return c.JSON(500, map[string]string{"error": err.Error()})
 	// 	}
 	// 	if stream, ok := msg["stream"].(string); ok {
-	// 		fmt.Println(c.Response().Writer, "<div>%s</div>", stream)
+	// 		log.Println(c.Response().Writer, "<div>%s</div>", stream)
 	// 		c.Response().Flush()
 	// 	}
 	// 	// time.Sleep(200 * time.Millisecond)
@@ -141,16 +147,19 @@ func (h *Handler) gitPush(c echo.Context) error {
 	)
 
 	if err != nil {
-		fmt.Println("Error creating container:", err)
+		log.Println("Error creating container:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
+	log.Println("Container created successfully")
 
 	err = apiClient.ContainerStart(context.Background(), containerResp.ID, container.StartOptions{})
 	
 	if err != nil {
-		fmt.Println("Error starting container:", err)
+		log.Println("Error starting container:", err)
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
+	
+	log.Println("Container started successfully")
 
 	return c.JSON(200, map[string]string{"message": "Webhook successful"})
 }
