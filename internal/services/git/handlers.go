@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/moby/moby/api/types/build"
 	"github.com/moby/moby/api/types/container"
+	"github.com/moby/moby/api/types/image"
 	"github.com/moby/moby/api/types/network"
 	"github.com/moby/moby/client"
 )
@@ -90,6 +91,30 @@ func (h *Handler) gitPush(c echo.Context) error {
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
 		log.Println("Container removed successfully")
+	}
+
+	images, err := apiClient.ImageList(c.Request().Context(), image.ListOptions{All: true})
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": err.Error()})
+	}
+
+	var imageId string
+	
+	for _, image := range images {
+		if image.RepoTags != nil && image.RepoTags[0] == "test-docker-project:latest" {
+			imageId = image.ID
+		}
+	}
+
+	log.Println("Found existing image ID:", imageId)
+
+	if imageId != "" {
+		_, err = apiClient.ImageRemove(context.Background(), imageId, image.RemoveOptions{Force: true, PruneChildren: true})
+		if err != nil {
+			log.Println("Error removing image:", err)
+			return c.JSON(500, map[string]string{"error": err.Error()})
+		}
+		log.Println("Image removed successfully")
 	}
 
 	buildContext, err := utils.TarDirectory("../test-docker-project")
