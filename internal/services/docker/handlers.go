@@ -75,7 +75,7 @@ func (h *Handler) listImages(c echo.Context) error {
 
 	defer apiClient.Close()
 
-	images, err := apiClient.ImageList(c.Request().Context(), image.ListOptions{All: true})
+	images, err := apiClient.ImageList(c.Request().Context(), image.ListOptions{})
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
