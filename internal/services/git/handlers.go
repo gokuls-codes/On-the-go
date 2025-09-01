@@ -101,7 +101,8 @@ func (h *Handler) gitPush(c echo.Context) error {
 	var imageId string
 	
 	for _, image := range images {
-		if image.RepoTags != nil && image.RepoTags[0] == "test-docker-project:latest" {
+		log.Println("Image:", image.RepoTags, image.ID)
+		if len(image.RepoTags) > 0 && image.RepoTags[0] == "test-docker-project:latest" {
 			imageId = image.ID
 		}
 	}
