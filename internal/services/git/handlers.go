@@ -3,7 +3,6 @@ package git
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os/exec"
 
@@ -45,26 +44,30 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	log.Println("Headers:", headers.Get("X-Hub-Signature"))
 
+	go func() {
+
 	cmd := exec.Command("git", "pull")
     cmd.Dir = "../test-docker-project"
 
     output, err := cmd.CombinedOutput()
     if err != nil {
 		log.Println("Error executing git pull:", string(output))
-        return c.JSON(500, map[string]string{"error": fmt.Sprintf("Error executing git pull: %s", string(output))})
+		return
     }
 	log.Println("Git pull successful\nOutput:", string(output))
 
 	apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return c.JSON(500, map[string]string{"error": "Failed to create Docker client"})
+		log.Println("Error creating Docker client:", err)
+		return
 	}
 
 	defer apiClient.Close()
 
 	containers, err := apiClient.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
+		log.Println("Error listing containers:", err)
+		return
 	}
 
 	var containerId string
@@ -82,21 +85,22 @@ func (h *Handler) gitPush(c echo.Context) error {
 		err = apiClient.ContainerStop(context.Background(), containerId, container.StopOptions{})
 		if err != nil {
 			log.Println("Error stopping container:", err)
-			return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 		}
 		log.Println("Container stopped successfully")
 
 		err = apiClient.ContainerRemove(context.Background(), containerId, container.RemoveOptions{})
 		if err != nil {
 			log.Println("Error removing container:", err)
-			return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 		}
 		log.Println("Container removed successfully")
 	}
 
 	images, err := apiClient.ImageList(c.Request().Context(), image.ListOptions{All: true})
 	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
+		log.Println("Error listing images:", err)
+		return
 	}
 
 	var imageId string
@@ -114,7 +118,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 		_, err = apiClient.ImageRemove(context.Background(), imageId, image.RemoveOptions{Force: true, PruneChildren: true})
 		if err != nil {
 			log.Println("Error removing image:", err)
-			return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 		}
 		log.Println("Image removed successfully")
 	}
@@ -122,7 +126,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 	buildContext, err := utils.TarDirectory("../test-docker-project")
 	if err != nil {
 		log.Println("Error creating build context:", err)
-		return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 	}
 
 	buildOptions := build.ImageBuildOptions{
@@ -135,7 +139,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	if err != nil {
 		log.Println("Error building image:", err)
-		return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 	}
 	
 	log.Println("Image built successfully")
@@ -146,7 +150,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 	for decoder.More() {
 		var msg map[string]interface{}
 		if err := decoder.Decode(&msg); err != nil {
-			return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 		}
 		if stream, ok := msg["stream"].(string); ok {
 			log.Println(c.Response().Writer, "<div>%s</div>", stream)
@@ -177,7 +181,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	if err != nil {
 		log.Println("Error creating container:", err)
-		return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 	}
 	log.Println("Container created successfully")
 
@@ -185,10 +189,12 @@ func (h *Handler) gitPush(c echo.Context) error {
 	
 	if err != nil {
 		log.Println("Error starting container:", err)
-		return c.JSON(500, map[string]string{"error": err.Error()})
+		return
 	}
 	
 	log.Println("Container started successfully")
+
+}()
 
 	return c.JSON(200, map[string]string{"message": "Webhook successful"})
 }
