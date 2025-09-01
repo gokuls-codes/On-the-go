@@ -97,7 +97,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 		log.Println("Container removed successfully")
 	}
 
-	images, err := apiClient.ImageList(c.Request().Context(), image.ListOptions{All: true})
+	images, err := apiClient.ImageList(context.Background(), image.ListOptions{All: true})
 	if err != nil {
 		log.Println("Error listing images:", err)
 		return
