@@ -1,62 +1,132 @@
 package templates
 
-import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sidebar"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/icon"
 
 templ DashboardLayout() {
-    @Base() {
-        <div class="min-h-screen flex">
-        <div class=" w-1/5 h-screen py-4 border-r border-border">
-            <h1 class=" text-4xl font-semibold text-white text-center px-4">On the Go</h1>
-            <nav class=" border-t border-border mt-4">
-                <ul class=" ">
-                    <li class="">
-                    @button.Button(button.Props{
-                        Variant: button.VariantGhost,
-                        Class: " w-full rounded-none p-4 items-start text-lg h-auto",
-                        Href: "/dashboard",
-                    }) {
-                        <p class="w-full">
-                            Dashboard
-                        </p>
-                    }
-                    </li>
-                    <li class="">
-                    @button.Button(button.Props{
-                        Variant: button.VariantGhost,
-                        Class: " w-full rounded-none p-4 items-start text-lg h-auto",
-                        Href: "/dashboard/containers",
-                    }) {
-                        <p class="w-full">
-                            Containers
-                        </p>
-                    }
-                    </li>
-                    <li class="">
-                    @button.Button(button.Props{
-                        Variant: button.VariantGhost,
-                        Class: " w-full rounded-none p-4 items-start text-lg h-auto",
-                        Href: "/dashboard/images",
-                    }) {
-                        <p class="w-full">
-                            Images
-                        </p>
-                    }
-                    </li>
-                    <li class="">
-                    @button.Button(button.Props{
-                        Variant: button.VariantGhost,
-                        Class: " w-full rounded-none p-4 items-start text-lg h-auto",
-                        Href: "/dashboard/logs",
-                    }) {
-                        <p class="w-full">
-                            Logs
-                        </p>
-                    }
-                    </li>
-                </ul>
-            </nav>
-        </div>
-            {children...}
-        </div>
-    }
+	@Base() {
+		<div class="min-h-screen flex">
+			@sidebar.Layout() {
+				@sidebar.Sidebar(sidebar.Props{
+					Collapsible: sidebar.CollapsibleOffcanvas,
+					Variant:     sidebar.VariantSidebar,
+				}) {
+					@sidebar.Header() {
+						@sidebar.Menu() {
+							@sidebar.MenuItem() {
+								@sidebar.MenuButton(sidebar.MenuButtonProps{
+									Href: "#",
+								}) {
+									<span class="font-semibold">On the Go</span>
+								}
+							}
+						}
+					}
+					@sidebar.Content() {
+						@sidebar.Group() {
+							@sidebar.Menu() {
+								@sidebar.MenuItem() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Href:    "/dashboard",
+										Tooltip: "Dashboard",
+									}) {
+										@icon.LayoutDashboard(icon.Props{Class: "size-4"})
+										<span>Dashboard</span>
+									}
+								}
+								@sidebar.MenuItem() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Href:    "/dashboard/containers",
+										Tooltip: "Containers",
+									}) {
+										@icon.Container(icon.Props{Class: "size-4"})
+										<span>Containers</span>
+									}
+								}
+								@sidebar.MenuItem() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Href:    "/dashboard/images",
+										Tooltip: "Images",
+									}) {
+										@icon.Image(icon.Props{Class: "size-4"})
+										<span>Images</span>
+									}
+								}
+								@sidebar.MenuItem() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Href:    "/dashboard/logs",
+										Tooltip: "Logs",
+									}) {
+										@icon.Logs(icon.Props{Class: "size-4"})
+										<span>Logs</span>
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			// <div class=" w-1/5 h-screen py-4 border-r border-border">
+			//     <h1 class=" text-4xl font-semibold text-white text-center px-4">On the Go</h1>
+			//     <nav class=" border-t border-border mt-4">
+			//         <ul class=" ">
+			//             <li class="">
+			//             @button.Button(button.Props{
+			//                 Variant: button.VariantGhost,
+			//                 Class: " w-full rounded-none p-4 items-start text-lg h-auto",
+			//                 Href: "/dashboard",
+			//             }) {
+			//                 <p class="w-full">
+			//                     Dashboard
+			//                 </p>
+			//             }
+			//             </li>
+			//             <li class="">
+			//             @button.Button(button.Props{
+			//                 Variant: button.VariantGhost,
+			//                 Class: " w-full rounded-none p-4 items-start text-lg h-auto",
+			//                 Href: "/dashboard/containers",
+			//             }) {
+			//                 <p class="w-full">
+			//                     Containers
+			//                 </p>
+			//             }
+			//             </li>
+			//             <li class="">
+			//             @button.Button(button.Props{
+			//                 Variant: button.VariantGhost,
+			//                 Class: " w-full rounded-none p-4 items-start text-lg h-auto",
+			//                 Href: "/dashboard/images",
+			//             }) {
+			//                 <p class="w-full">
+			//                     Images
+			//                 </p>
+			//             }
+			//             </li>
+			//             <li class="">
+			//             @button.Button(button.Props{
+			//                 Variant: button.VariantGhost,
+			//                 Class: " w-full rounded-none p-4 items-start text-lg h-auto",
+			//                 Href: "/dashboard/logs",
+			//             }) {
+			//                 <p class="w-full">
+			//                     Logs
+			//                 </p>
+			//             }
+			//             </li>
+			//         </ul>
+			//     </nav>
+			// </div>
+			@sidebar.Inset() {
+				<div class="flex h-full ">
+					<div class="flex h-fit items-center gap-4 absolute top-2">
+						@sidebar.Trigger()
+					</div>
+					<div class="flex-1">
+						{ children... }
+					</div>
+				</div>
+			}
+		</div>
+	}
 }

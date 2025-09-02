@@ -10,6 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/input"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/label"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sidebar"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sheet"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/popover"
 
 func Base() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -41,6 +44,18 @@ func Base() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = label.Script().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = sidebar.Script().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = sheet.Script().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = popover.Script().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

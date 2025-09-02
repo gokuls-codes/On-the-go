@@ -2,6 +2,9 @@ package templates
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/input"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/label"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sidebar"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sheet"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/popover"
 
 
 templ Base() {
@@ -19,9 +22,14 @@ templ Base() {
     <link href="/static/styles.css" rel="stylesheet" />
     <script src="/static/htmx.min.js"></script>
     <script src="/static/script.js" defer></script>
+
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   @input.Script()
   @label.Script()
+  @sidebar.Script()
+  @sheet.Script()
+  @popover.Script()
+
   </head>
   <body class="dark bg-background text-foreground">
     { children... }
