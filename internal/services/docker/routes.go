@@ -12,5 +12,6 @@ func (h *Handler) RegisterRoutes(group *echo.Group) {
 	group.POST("/containers", h.createContainer)
 	group.GET("/images", h.listImages)
 
+	group.GET("/projects/new", h.newProjectPage)
 	group.POST("/projects", h.createProject)
 }

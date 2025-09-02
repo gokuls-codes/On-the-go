@@ -87,7 +87,13 @@ func (h *Handler) createContainerPage(c echo.Context) error {
 	return utils.Render(c, pages.CreateContainerPage())
 }
 
+func (h *Handler) newProjectPage(c echo.Context) error {
+	return utils.Render(c, pages.NewProjectPage())
+}
+
 func (h *Handler) createProject(c echo.Context) error {
+
+	return c.JSON(200, map[string]string{"message": "Project creation started. Check server logs for progress."})
 
 	repoURL := "https://github.com/gokuls-codes/test-docker-project.git"
 	targetDir := "../"

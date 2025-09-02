@@ -9,11 +9,7 @@ templ DashboardPage() {
             <div class=" w-full flex justify-between items-center">
                 <h2 class=" text-2xl font-bold">Dashboard</h2>
                 @button.Button(button.Props{
-                    Attributes: templ.Attributes{
-                        "hx-post": "/dashboard/projects",
-                        "hx-target": "#response",
-                        "hx-swap": "afterbegin",
-                    },
+                    Href: "/dashboard/projects/new",
                 }) {
                     <i class="material-icons">add</i>
                     <span>New Project</span>

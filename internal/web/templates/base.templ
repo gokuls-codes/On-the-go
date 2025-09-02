@@ -1,5 +1,9 @@
 package templates 
 
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/input"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/label"
+
+
 templ Base() {
 <!DOCTYPE html>
 <html lang="en" class="dark">
@@ -16,6 +20,8 @@ templ Base() {
     <script src="/static/htmx.min.js"></script>
     <script src="/static/script.js" defer></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  @input.Script()
+  @label.Script()
   </head>
   <body class="dark bg-background text-foreground">
     { children... }
