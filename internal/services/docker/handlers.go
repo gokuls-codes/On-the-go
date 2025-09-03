@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -29,7 +30,7 @@ func (h *Handler) listContainers(c echo.Context) error {
 
 	defer apiClient.Close()
 
-	containers, err := apiClient.ContainerList(c.Request().Context(), container.ListOptions{All: true})
+	containers, err := apiClient.ContainerList(context.Background(), container.ListOptions{All: true})
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
@@ -53,7 +54,7 @@ func (h *Handler) createContainer(c echo.Context) error {
 	defer apiClient.Close()
 
 	_, err = apiClient.ContainerCreate(
-		c.Request().Context(),
+		context.Background(),
 		&container.Config{
 			Image: "hello-world",
 		},
@@ -79,7 +80,7 @@ func (h *Handler) listImages(c echo.Context) error {
 
 	defer apiClient.Close()
 
-	images, err := apiClient.ImageList(c.Request().Context(), image.ListOptions{})
+	images, err := apiClient.ImageList(context.Background(), image.ListOptions{})
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
@@ -104,82 +105,91 @@ func (h *Handler) createProject(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	targetDir := "../otg-projects/"
-	repoName := utils.GetRepoName(p.GitHubURL)
+	go func() {
+		targetDir := "../otg-projects/"
+		repoName := utils.GetRepoName(p.GitHubURL)
 
-	cmd := exec.Command("git", "clone", p.GitHubURL, targetDir+repoName)
-	output, err := cmd.CombinedOutput()
+		cmd := exec.Command("git", "clone", p.GitHubURL, targetDir+repoName)
+		output, err := cmd.CombinedOutput()
 
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": fmt.Sprintf("Git clone failed: %s", string(output))})
-	}
-
-	apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": "Failed to create Docker client"})
-	}
-
-	defer apiClient.Close()
-
-	buildContext, err := utils.TarDirectory(targetDir + repoName)
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
-	}
-
-	buildOptions := build.ImageBuildOptions{
-		Dockerfile: "Dockerfile",
-		Tags:       []string{repoName},
-		Remove:     true,
-	}
-
-	response, err := apiClient.ImageBuild(c.Request().Context(), buildContext, buildOptions)
-
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
-	}
-
-	decoder := json.NewDecoder(response.Body)
-	for decoder.More() {
-		var msg map[string]interface{}
-		if err := decoder.Decode(&msg); err != nil {
-			return c.JSON(500, map[string]string{"error": err.Error()})
+		if err != nil {
+			log.Printf("Git clone failed: %s", string(output))
+			return
 		}
-		if stream, ok := msg["stream"].(string); ok {
-			log.Println(stream)
-		}
-		// time.Sleep(200 * time.Millisecond)
-	}
 
-	containerResp, err := apiClient.ContainerCreate(
-		c.Request().Context(),
-		&container.Config{
-			Image: repoName,
-		},
-		&container.HostConfig{
-			PortBindings: nat.PortMap{
-				nat.Port(fmt.Sprintf("%d/tcp", p.ContainerPort)): []nat.PortBinding{
-					{
-						HostIP:   "0.0.0.0",
-						HostPort: fmt.Sprintf("%d", p.HostPort),
+		apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		defer apiClient.Close()
+
+		buildContext, err := utils.TarDirectory(targetDir + repoName)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		buildOptions := build.ImageBuildOptions{
+			Dockerfile: "Dockerfile",
+			Tags:       []string{repoName},
+			Remove:     true,
+		}
+
+		response, err := apiClient.ImageBuild(context.Background(), buildContext, buildOptions)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		decoder := json.NewDecoder(response.Body)
+		for decoder.More() {
+			var msg map[string]interface{}
+			if err := decoder.Decode(&msg); err != nil {
+				log.Println(err)
+			}
+			if stream, ok := msg["stream"].(string); ok {
+				log.Println(stream)
+			}
+			// time.Sleep(200 * time.Millisecond)
+		}
+
+		containerResp, err := apiClient.ContainerCreate(
+			context.Background(),
+			&container.Config{
+				Image: repoName,
+			},
+			&container.HostConfig{
+				PortBindings: nat.PortMap{
+					nat.Port(fmt.Sprintf("%d/tcp", p.ContainerPort)): []nat.PortBinding{
+						{
+							HostIP:   "0.0.0.0",
+							HostPort: fmt.Sprintf("%d", p.HostPort),
+						},
 					},
 				},
 			},
-		},
-		&network.NetworkingConfig{},
-		nil, "",
-	)
+			&network.NetworkingConfig{},
+			nil, "",
+		)
 
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
-	}
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	err = apiClient.ContainerStart(c.Request().Context(), containerResp.ID, container.StartOptions{})
+		err = apiClient.ContainerStart(context.Background(), containerResp.ID, container.StartOptions{})
 
-	if err != nil {
-		return c.JSON(500, map[string]string{"error": err.Error()})
-	}
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	return nil
+	}()
+
+	return c.JSON(200, map[string]string{"message": "Project creation started. This may take a while."})
 }
 
 func (h *Handler) getEnvVarRow(c echo.Context) error {
