@@ -2,27 +2,36 @@ package templates
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sidebar"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/icon"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
 
 templ DashboardLayout() {
 	@Base() {
-		<div class="min-h-screen flex">
-			@sidebar.Layout() {
+		<div class="min-h-screen ">
+			@sidebar.Layout(sidebar.LayoutProps{
+				Class: "w-full",
+			}) {
 				@sidebar.Sidebar(sidebar.Props{
-					Collapsible: sidebar.CollapsibleOffcanvas,
+					Collapsible: sidebar.CollapsibleNone,
 					Variant:     sidebar.VariantSidebar,
+					Class:       " border-none",
 				}) {
 					@sidebar.Header() {
 						@sidebar.Menu() {
 							@sidebar.MenuItem() {
 								@sidebar.MenuButton(sidebar.MenuButtonProps{
-									Href: "#",
+									Href:  "#",
+									Class: " !h-auto w-auto flex gap-2 mt-2",
 								}) {
-									<span class="font-semibold">On the Go</span>
+									<img src="/static/images/onthego.png" class=" aspect-video h-8  object-cover"/>
+									<span class="font-semibold text-2xl">On the Go</span>
 								}
 							}
 						}
 					}
-					@sidebar.Content() {
+					@sidebar.Separator()
+					@sidebar.Content(sidebar.ContentProps{
+						Class: " border-r-border",
+					}) {
 						@sidebar.Group() {
 							@sidebar.Menu() {
 								@sidebar.MenuItem() {
@@ -64,6 +73,29 @@ templ DashboardLayout() {
 							}
 						}
 					}
+				}
+				@sidebar.Inset() {
+					<div class="flex h-full flex-1 flex-col ">
+						<div class="flex h-fit items-center gap-4 md:hidden border-b border-border p-4 justify-between">
+							@sidebar.Trigger()
+							<img src="/static/images/onthego.png" class=" aspect-video h-8  object-cover"/>
+							@button.Button(button.Props{
+								Size:    button.SizeIcon,
+								Variant: button.VariantGhost,
+								Class:   "size-8",
+								Href: "https://github.com/gokuls-codes/On-the-go",
+								Target: "_blank",
+							}) {
+								@icon.Github(icon.Props{
+									Class: " text-muted-foreground size-6",
+								})
+								<span class="sr-only">Open GitHub</span>
+							}
+						</div>
+						<div class="flex-1">
+							{ children... }
+						</div>
+					</div>
 				}
 			}
 			// <div class=" w-1/5 h-screen py-4 border-r border-border">
@@ -117,16 +149,6 @@ templ DashboardLayout() {
 			//         </ul>
 			//     </nav>
 			// </div>
-			@sidebar.Inset() {
-				<div class="flex h-full ">
-					<div class="flex h-fit items-center gap-4 absolute top-2">
-						@sidebar.Trigger()
-					</div>
-					<div class="flex-1">
-						{ children... }
-					</div>
-				</div>
-			}
 		</div>
 	}
 }

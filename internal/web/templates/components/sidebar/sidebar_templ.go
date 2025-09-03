@@ -338,7 +338,7 @@ func Sidebar(props ...Props) templ.Component {
 				return nil
 			})
 			templ_7745c5c3_Err = sheet.Content(sheet.ContentProps{
-				Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0", // Only visible on mobile
+				Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0 border-none", // Only visible on mobile
 				HideCloseButton: true,
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
@@ -597,7 +597,7 @@ func Trigger(props ...TriggerProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = icon.PanelLeft(icon.Props{Class: "size-4"}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = icon.PanelLeft(icon.Props{Class: "size-6 "}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -610,7 +610,7 @@ func Trigger(props ...TriggerProps) templ.Component {
 		templ_7745c5c3_Err = button.Button(button.Props{
 			Size:    button.SizeIcon,
 			Variant: button.VariantGhost,
-			Class:   "size-7",
+			Class:   "size-8",
 		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var20), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

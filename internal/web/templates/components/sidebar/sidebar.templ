@@ -222,7 +222,7 @@ templ Sidebar(props ...Props) {
 		Open: false,
 	}) {
 		@sheet.Content(sheet.ContentProps{
-			Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0", // Only visible on mobile  
+			Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0 border-none", // Only visible on mobile  
 			HideCloseButton: true,
 		}) {
 			<div class="flex h-full flex-col bg-sidebar text-sidebar-foreground">
@@ -300,9 +300,9 @@ templ Trigger(props ...TriggerProps) {
 		@button.Button(button.Props{
 			Size:    button.SizeIcon,
 			Variant: button.VariantGhost,
-			Class:   "size-7",
+			Class:   "size-8",
 		}) {
-			@icon.PanelLeft(icon.Props{Class: "size-4"})
+			@icon.PanelLeft(icon.Props{Class: "size-6 "})
 			<span class="sr-only">Toggle Sidebar</span>
 		}
 	</div>
