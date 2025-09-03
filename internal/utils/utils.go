@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -15,7 +16,7 @@ func Render(ctx echo.Context, cmp templ.Component) error {
 	return cmp.Render(ctx.Request().Context(), ctx.Response())
 }
 
-func TarDirectory (dir string) (io.Reader, error) {
+func TarDirectory(dir string) (io.Reader, error) {
 	buf := new(bytes.Buffer)
 	tw := tar.NewWriter(buf)
 	defer tw.Close()
@@ -38,7 +39,7 @@ func TarDirectory (dir string) (io.Reader, error) {
 		if fi.Mode().IsRegular() {
 			f, err := os.Open(file)
 			if err != nil {
-				return  err
+				return err
 			}
 
 			defer f.Close()
@@ -56,4 +57,10 @@ func TarDirectory (dir string) (io.Reader, error) {
 	}
 
 	return buf, nil
+}
+
+func GetRepoName(url string) string {
+	url = strings.TrimSuffix(url, ".git")
+	parts := strings.Split(url, "/")
+	return parts[len(parts)-1]
 }

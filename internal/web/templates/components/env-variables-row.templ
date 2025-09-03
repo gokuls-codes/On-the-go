@@ -1,0 +1,34 @@
+package components
+
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/input"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/icon"
+
+templ EnvVariablesRow() {
+	<div class=" flex gap-2 items-center ">
+		@input.Input(input.Props{
+			Type:        input.TypeText,
+			Class:       "form-control",
+			Name:        "envKey[]",
+			Required:    true,
+			Placeholder: "Key",
+		})
+		@input.Input(input.Props{
+			Type:        input.TypeText,
+			Class:       "form-control",
+			Name:        "envValue[]",
+			Required:    true,
+			Placeholder: "Value",
+		})
+        @button.Button(button.Props{
+            Type: button.TypeButton,
+            Size: button.SizeIcon,
+            Variant: button.VariantDestructive,
+            Attributes: templ.Attributes{
+                "onClick": "this.parentElement.remove()",
+            },
+        }) {
+            @icon.X(icon.Props{Class: "size-4"})
+        }
+	</div>
+}

@@ -22,7 +22,6 @@ templ NewProjectPage() {
 						Type:        input.TypeText,
 						Class:       "form-control",
 						Name:        "title",
-						ID:          "title",
 						Required:    true,
 						Placeholder: "Awesome Project",
 					})
@@ -35,7 +34,6 @@ templ NewProjectPage() {
 					}
 					@input.Input(input.Props{
 						Type:        input.TypeURL,
-                        ID:          "githubUrl",
 						Class:       "form-control",
 						Name:        "githubUrl",
 						Required:    true,
@@ -50,7 +48,6 @@ templ NewProjectPage() {
 					}
 					@input.Input(input.Props{
 						Type:        input.TypeNumber,
-                        ID:          "containerPort",
 						Class:       "form-control",
 						Name:        "containerPort",
 						Required:    true,
@@ -65,14 +62,12 @@ templ NewProjectPage() {
 					}
 					@input.Input(input.Props{
 						Type:        input.TypeNumber,
-                        ID:          "hostPort",
 						Class:       "form-control",
 						Name:        "hostPort",
 						Required:    true,
 						Placeholder: "3000",
 					})
 				</div>
-
 				<div class=" space-y-2">
 					@label.Label(label.Props{
 						For: "projectUrl",
@@ -81,55 +76,35 @@ templ NewProjectPage() {
 					}
 					@input.Input(input.Props{
 						Type:        input.TypeURL,
-                        ID:          "projectUrl",
 						Class:       "form-control",
 						Name:        "projectUrl",
 						Required:    true,
 						Placeholder: "https://your.project.url",
 					})
 				</div>
-
-
 				<div class=" space-y-2">
-					@label.Label(label.Props{
-					}) {
+					@label.Label(label.Props{}) {
 						Environment Variables
 					}
+					<div class=" px-3 py-4 border-input border rounded-md space-y-4 dark:bg-input/30 flex flex-col ">
+						<p class="text-muted-foreground " id="env-vars-text">Add environment variables for your project</p>
 
-                    <div class=" px-3 py-4 border-input border rounded-md space-y-4 dark:bg-input/30 flex flex-col ">
-                    <p class="text-muted-foreground ">Add environment variables for your project</p>
-
-                    <div class=" flex gap-2 items-center ">
-
-					@input.Input(input.Props{
-						Type:        input.TypeURL,
-                        ID:          "key",
-						Class:       "form-control",
-						Name:        "key",
-						Required:    true,
-						Placeholder: "Key",
-					})
-					@input.Input(input.Props{
-						Type:        input.TypeURL,
-                        ID:          "value",
-						Class:       "form-control",
-						Name:        "value",
-						Required:    true,
-						Placeholder: "Value",
-					})
-                    </div>
-
-                    @button.Button(button.Props{
-                        Type: button.TypeButton,
-                        Size: button.SizeSm,
-                        Variant: button.VariantOutline,
-                        Class: " self-end ",
-                    }) {
-                        <i class="material-icons">add</i>
-                        <span>Add</span>
-                    }
-                    </div>
-                </div>
+						@button.Button(button.Props{
+							Type:    button.TypeButton,
+							Size:    button.SizeSm,
+							Variant: button.VariantOutline,
+							Class:   " self-end ",
+							Attributes: templ.Attributes{
+								"hx-get":    "/dashboard/projects/new/env-var-row",
+								"hx-target": "#env-vars-text",
+								"hx-swap":   "afterend",
+							},
+						}) {
+							<i class="material-icons">add</i>
+							<span>Add</span>
+						}
+					</div>
+				</div>
 				@button.Button(button.Props{
 					Type: button.TypeSubmit,
 				}) {

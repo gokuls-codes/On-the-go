@@ -14,4 +14,6 @@ func (h *Handler) RegisterRoutes(group *echo.Group) {
 
 	group.GET("/projects/new", h.newProjectPage)
 	group.POST("/projects", h.createProject)
+
+	group.GET("/projects/new/env-var-row", h.getEnvVarRow)
 }

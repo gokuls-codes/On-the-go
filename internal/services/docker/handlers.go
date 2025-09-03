@@ -3,10 +3,14 @@ package docker
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 	"os/exec"
 
 	"github.com/docker/go-connections/nat"
+	"github.com/gokuls-codes/on-the-go/internal/types"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
+	"github.com/gokuls-codes/on-the-go/internal/web/templates/components"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
 	"github.com/labstack/echo/v4"
 	"github.com/moby/moby/api/types/build"
@@ -93,12 +97,17 @@ func (h *Handler) newProjectPage(c echo.Context) error {
 
 func (h *Handler) createProject(c echo.Context) error {
 
-	return c.JSON(200, map[string]string{"message": "Project creation started. Check server logs for progress."})
+	p := new(types.CreateProjectPayload)
 
-	repoURL := "https://github.com/gokuls-codes/test-docker-project.git"
-	targetDir := "../"
+	if err := c.Bind(p); err != nil {
+		log.Println(err)
+		return c.String(http.StatusBadRequest, "bad request")
+	}
 
-	cmd := exec.Command("git", "clone", repoURL, targetDir + "test-docker-project")
+	targetDir := "../otg-projects/"
+	repoName := utils.GetRepoName(p.GitHubURL)
+
+	cmd := exec.Command("git", "clone", p.GitHubURL, targetDir+repoName)
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -112,15 +121,15 @@ func (h *Handler) createProject(c echo.Context) error {
 
 	defer apiClient.Close()
 
-	buildContext, err := utils.TarDirectory("../test-docker-project")
+	buildContext, err := utils.TarDirectory(targetDir + repoName)
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
 	buildOptions := build.ImageBuildOptions{
 		Dockerfile: "Dockerfile",
-		Tags: []string{"test-docker-project"},
-		Remove: true,
+		Tags:       []string{repoName},
+		Remove:     true,
 	}
 
 	response, err := apiClient.ImageBuild(c.Request().Context(), buildContext, buildOptions)
@@ -136,8 +145,7 @@ func (h *Handler) createProject(c echo.Context) error {
 			return c.JSON(500, map[string]string{"error": err.Error()})
 		}
 		if stream, ok := msg["stream"].(string); ok {
-			fmt.Fprintf(c.Response().Writer, "<div>%s</div>", stream)
-			c.Response().Flush()
+			log.Println(stream)
 		}
 		// time.Sleep(200 * time.Millisecond)
 	}
@@ -145,20 +153,19 @@ func (h *Handler) createProject(c echo.Context) error {
 	containerResp, err := apiClient.ContainerCreate(
 		c.Request().Context(),
 		&container.Config{
-			Image: "test-docker-project",
+			Image: repoName,
 		},
 		&container.HostConfig{
 			PortBindings: nat.PortMap{
-				nat.Port("3000/tcp"): []nat.PortBinding{
+				nat.Port(fmt.Sprintf("%d/tcp", p.ContainerPort)): []nat.PortBinding{
 					{
 						HostIP:   "0.0.0.0",
-						HostPort: "8888",
+						HostPort: fmt.Sprintf("%d", p.HostPort),
 					},
 				},
 			},
 		},
-		&network.NetworkingConfig{
-		},
+		&network.NetworkingConfig{},
 		nil, "",
 	)
 
@@ -167,10 +174,14 @@ func (h *Handler) createProject(c echo.Context) error {
 	}
 
 	err = apiClient.ContainerStart(c.Request().Context(), containerResp.ID, container.StartOptions{})
-	
+
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
 	return nil
+}
+
+func (h *Handler) getEnvVarRow(c echo.Context) error {
+	return utils.Render(c, components.EnvVariablesRow())
 }

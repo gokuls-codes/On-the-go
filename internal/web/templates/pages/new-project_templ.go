@@ -78,7 +78,6 @@ func NewProjectPage() templ.Component {
 				Type:        input.TypeText,
 				Class:       "form-control",
 				Name:        "title",
-				ID:          "title",
 				Required:    true,
 				Placeholder: "Awesome Project",
 			}).Render(ctx, templ_7745c5c3_Buffer)
@@ -115,7 +114,6 @@ func NewProjectPage() templ.Component {
 			}
 			templ_7745c5c3_Err = input.Input(input.Props{
 				Type:        input.TypeURL,
-				ID:          "githubUrl",
 				Class:       "form-control",
 				Name:        "githubUrl",
 				Required:    true,
@@ -154,7 +152,6 @@ func NewProjectPage() templ.Component {
 			}
 			templ_7745c5c3_Err = input.Input(input.Props{
 				Type:        input.TypeNumber,
-				ID:          "containerPort",
 				Class:       "form-control",
 				Name:        "containerPort",
 				Required:    true,
@@ -193,7 +190,6 @@ func NewProjectPage() templ.Component {
 			}
 			templ_7745c5c3_Err = input.Input(input.Props{
 				Type:        input.TypeNumber,
-				ID:          "hostPort",
 				Class:       "form-control",
 				Name:        "hostPort",
 				Required:    true,
@@ -232,7 +228,6 @@ func NewProjectPage() templ.Component {
 			}
 			templ_7745c5c3_Err = input.Input(input.Props{
 				Type:        input.TypeURL,
-				ID:          "projectUrl",
 				Class:       "form-control",
 				Name:        "projectUrl",
 				Required:    true,
@@ -267,33 +262,7 @@ func NewProjectPage() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\" px-3 py-4 border-input border rounded-md space-y-4 dark:bg-input/30 flex flex-col \"><p class=\"text-muted-foreground \">Add environment variables for your project</p><div class=\" flex gap-2 items-center \">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = input.Input(input.Props{
-				Type:        input.TypeURL,
-				ID:          "key",
-				Class:       "form-control",
-				Name:        "key",
-				Required:    true,
-				Placeholder: "Key",
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = input.Input(input.Props{
-				Type:        input.TypeURL,
-				ID:          "value",
-				Class:       "form-control",
-				Name:        "value",
-				Required:    true,
-				Placeholder: "Value",
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\" px-3 py-4 border-input border rounded-md space-y-4 dark:bg-input/30 flex flex-col \"><p class=\"text-muted-foreground \" id=\"env-vars-text\">Add environment variables for your project</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -309,7 +278,7 @@ func NewProjectPage() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<i class=\"material-icons\">add</i> <span>Add</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<i class=\"material-icons\">add</i> <span>Add</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -320,11 +289,16 @@ func NewProjectPage() templ.Component {
 				Size:    button.SizeSm,
 				Variant: button.VariantOutline,
 				Class:   " self-end ",
+				Attributes: templ.Attributes{
+					"hx-get":    "/dashboard/projects/new/env-var-row",
+					"hx-target": "#env-vars-text",
+					"hx-swap":   "afterend",
+				},
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -340,7 +314,7 @@ func NewProjectPage() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "Submit")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "Submit")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -352,7 +326,7 @@ func NewProjectPage() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</form></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</form></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
