@@ -23,3 +23,6 @@ migrate-up:
 migrate-down:
 	@echo "Migrating down..."
 	@migrate -database "sqlite3://db.sqlite3" -path db/migration -verbose down
+
+sqlc:
+	@sqlc generate
