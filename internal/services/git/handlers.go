@@ -58,8 +58,9 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	go func() {
 
+		targetDir := "../otg-projects/"
 		cmd := exec.Command("git", "pull")
-		cmd.Dir = "../otg-projects/" + repoName
+		cmd.Dir = targetDir + repoName
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -108,7 +109,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 			log.Println("Image removed successfully")
 		}
 
-		buildContext, err := utils.TarDirectory("../" + repoName)
+		buildContext, err := utils.TarDirectory(targetDir + repoName)
 		if err != nil {
 			log.Println("Error creating build context:", err)
 			return
@@ -158,10 +159,10 @@ func (h *Handler) gitPush(c echo.Context) error {
 			},
 			&container.HostConfig{
 				PortBindings: nat.PortMap{
-					nat.Port(fmt.Sprintf("%d/tcp", project.ContainerPort.Int64)): []nat.PortBinding{
+					nat.Port(fmt.Sprintf("%d/tcp", project.ContainerPort)): []nat.PortBinding{
 						{
 							HostIP:   "0.0.0.0",
-							HostPort: fmt.Sprintf("%d", project.HostPort.Int64),
+							HostPort: fmt.Sprintf("%d", project.HostPort),
 						},
 					},
 				},

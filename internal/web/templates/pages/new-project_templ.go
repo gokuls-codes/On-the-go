@@ -69,7 +69,7 @@ func NewProjectPage() templ.Component {
 				return nil
 			})
 			templ_7745c5c3_Err = label.Label(label.Props{
-				For: "title",
+				For: "name",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -77,7 +77,7 @@ func NewProjectPage() templ.Component {
 			templ_7745c5c3_Err = input.Input(input.Props{
 				Type:        input.TypeText,
 				Class:       "form-control",
-				Name:        "title",
+				Name:        "name",
 				Required:    true,
 				Placeholder: "Awesome Project",
 			}).Render(ctx, templ_7745c5c3_Buffer)

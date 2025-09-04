@@ -110,10 +110,12 @@ func (h *Handler) createProject(c echo.Context) error {
 	repoName := utils.GetRepoName(p.GitHubURL)
 
 	params := sqlc.CreateProjectParams{
-		Name:        p.Title,
-		Description: sql.NullString{String: p.Description, Valid: p.Description != ""},
-		GithubUrl:   p.GitHubURL,
-		RepoName:    repoName,
+		Name:          p.Name,
+		Description:   sql.NullString{String: p.Description, Valid: p.Description != ""},
+		GithubUrl:     p.GitHubURL,
+		RepoName:      repoName,
+		ContainerPort: int64(p.ContainerPort),
+		HostPort:      int64(p.HostPort),
 	}
 	project, err := h.Store.CreateProject(c.Request().Context(), params)
 

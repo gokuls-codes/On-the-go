@@ -32,8 +32,8 @@ type Project struct {
 	Description   sql.NullString
 	GithubUrl     interface{}
 	RepoName      string
-	ContainerPort sql.NullInt64
-	HostPort      sql.NullInt64
+	ContainerPort int64
+	HostPort      int64
 	ImageID       sql.NullString
 	ContainerID   sql.NullString
 	CreatedAt     time.Time

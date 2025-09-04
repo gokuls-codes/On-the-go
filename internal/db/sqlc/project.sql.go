@@ -24,8 +24,8 @@ type CreateProjectParams struct {
 	Description   sql.NullString
 	GithubUrl     interface{}
 	RepoName      string
-	ContainerPort sql.NullInt64
-	HostPort      sql.NullInt64
+	ContainerPort int64
+	HostPort      int64
 }
 
 func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
