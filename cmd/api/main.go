@@ -11,11 +11,11 @@ import (
 func main() {
 	config := config.NewConfig()
 
-	db, err := db.NewDatabase()
+	store, err := db.NewStore()
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-	server := server.NewServer(config.Port, db)
+
+	server := server.NewServer(config.Port, store)
 	server.Start()
 }

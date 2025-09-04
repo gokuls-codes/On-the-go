@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"os/exec"
 
 	"github.com/docker/go-connections/nat"
+	"github.com/gokuls-codes/on-the-go/internal/db/sqlc"
 	"github.com/gokuls-codes/on-the-go/internal/types"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/components"
@@ -105,9 +107,23 @@ func (h *Handler) createProject(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
+	repoName := utils.GetRepoName(p.GitHubURL)
+
+	params := sqlc.CreateProjectParams{
+		Name:        p.Title,
+		Description: sql.NullString{String: p.Description, Valid: p.Description != ""},
+		GithubUrl:   p.GitHubURL,
+		RepoName:    repoName,
+	}
+	project, err := h.Store.CreateProject(c.Request().Context(), params)
+
+	if err != nil {
+		log.Println(err)
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
 	go func() {
 		targetDir := "../otg-projects/"
-		repoName := utils.GetRepoName(p.GitHubURL)
 
 		cmd := exec.Command("git", "clone", p.GitHubURL, targetDir+repoName)
 		output, err := cmd.CombinedOutput()
@@ -156,6 +172,16 @@ func (h *Handler) createProject(c echo.Context) error {
 			// time.Sleep(200 * time.Millisecond)
 		}
 
+		err = h.Store.Queries.UpdateImageId(context.Background(), sqlc.UpdateImageIdParams{
+			ID:      project.ID,
+			ImageID: sql.NullString{String: repoName, Valid: true},
+		})
+
+		if err != nil {
+			log.Println("Updating image ID failed:", err)
+			return
+		}
+
 		containerResp, err := apiClient.ContainerCreate(
 			context.Background(),
 			&container.Config{
@@ -180,6 +206,16 @@ func (h *Handler) createProject(c echo.Context) error {
 			return
 		}
 
+		err = h.Store.Queries.UpdateContainerId(context.Background(), sqlc.UpdateContainerIdParams{
+			ID:          project.ID,
+			ContainerID: sql.NullString{String: containerResp.ID, Valid: true},
+		})
+
+		if err != nil {
+			log.Println("Updating container ID failed:", err)
+			return
+		}
+
 		err = apiClient.ContainerStart(context.Background(), containerResp.ID, container.StartOptions{})
 
 		if err != nil {
@@ -189,7 +225,7 @@ func (h *Handler) createProject(c echo.Context) error {
 
 	}()
 
-	return c.JSON(200, map[string]string{"message": "Project creation started. This may take a while."})
+	return c.JSON(200, project)
 }
 
 func (h *Handler) getEnvVarRow(c echo.Context) error {

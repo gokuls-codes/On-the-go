@@ -1,7 +1,7 @@
 package types
 
 type CreateProjectPayload struct {
-	Title         string   `json:"title" form:"title"`
+	Title         string   `json:"name" form:"name"`
 	Description   string   `json:"description" form:"description"`
 	GitHubURL     string   `json:"githubUrl" form:"githubUrl"`
 	ContainerPort int      `json:"containerPort" form:"containerPort"`

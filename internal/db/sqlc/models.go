@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.29.0
 
-package db
+package sqlc
 
 import (
 	"database/sql"
@@ -27,10 +27,15 @@ type EnvVar struct {
 }
 
 type Project struct {
-	ID          int64
-	Name        string
-	Description sql.NullString
-	GithubURL   interface{}
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID            int64
+	Name          string
+	Description   sql.NullString
+	GithubUrl     interface{}
+	RepoName      string
+	ContainerPort sql.NullInt64
+	HostPort      sql.NullInt64
+	ImageID       sql.NullString
+	ContainerID   sql.NullString
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }

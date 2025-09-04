@@ -1,8 +1,7 @@
 package server
 
 import (
-	"database/sql"
-
+	"github.com/gokuls-codes/on-the-go/internal/db"
 	"github.com/gokuls-codes/on-the-go/internal/services/docker"
 	"github.com/gokuls-codes/on-the-go/internal/services/git"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
@@ -13,19 +12,19 @@ import (
 )
 
 type Server struct {
-	port string
-	db *sql.DB
+	port  string
+	store *db.Store
 }
 
-func NewServer(port string, db *sql.DB) *Server {
-	return &Server{port: port, db: db}
+func NewServer(port string, store *db.Store) *Server {
+	return &Server{port: port, store: store}
 }
 
 func (s *Server) Start() {
 	e := echo.New()
 
 	e.Pre(middleware.RemoveTrailingSlash())
-	
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
@@ -43,12 +42,16 @@ func (s *Server) Start() {
 	dashboardGroup.GET("", func(c echo.Context) error {
 		return utils.Render(c, pages.DashboardPage())
 	})
-	
-	dockerHandler := docker.Handler{}
+
+	dockerHandler := docker.Handler{
+		Store: s.store,
+	}
 	dockerHandler.RegisterRoutes(dashboardGroup)
 
 	gitGroup := e.Group("/git")
-	gitHandler := git.Handler{}
+	gitHandler := git.Handler{
+		Store: s.store,
+	}
 	gitHandler.RegisterRoutes(gitGroup)
 
 	e.Logger.Fatal(e.Start(":" + s.port))

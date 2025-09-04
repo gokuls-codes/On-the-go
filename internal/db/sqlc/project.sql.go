@@ -3,7 +3,7 @@
 //   sqlc v1.29.0
 // source: project.sql
 
-package db
+package sqlc
 
 import (
 	"context"
@@ -12,29 +12,118 @@ import (
 
 const createProject = `-- name: CreateProject :one
 INSERT INTO projects (
-  name, description, "githubURL"
+  name, description, github_url, repo_name, container_port, host_port
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?, ?, ?
 )
-RETURNING id, name, description, githubURL, created_at, updated_at
+RETURNING id, name, description, github_url, repo_name, container_port, host_port, image_id, container_id, created_at, updated_at
 `
 
 type CreateProjectParams struct {
-	Name        string
-	Description sql.NullString
-	GithubURL   interface{}
+	Name          string
+	Description   sql.NullString
+	GithubUrl     interface{}
+	RepoName      string
+	ContainerPort sql.NullInt64
+	HostPort      sql.NullInt64
 }
 
 func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
-	row := q.db.QueryRowContext(ctx, createProject, arg.Name, arg.Description, arg.GithubURL)
+	row := q.db.QueryRowContext(ctx, createProject,
+		arg.Name,
+		arg.Description,
+		arg.GithubUrl,
+		arg.RepoName,
+		arg.ContainerPort,
+		arg.HostPort,
+	)
 	var i Project
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.GithubURL,
+		&i.GithubUrl,
+		&i.RepoName,
+		&i.ContainerPort,
+		&i.HostPort,
+		&i.ImageID,
+		&i.ContainerID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getProjectByRepoName = `-- name: GetProjectByRepoName :one
+SELECT id, name, description, github_url, repo_name, container_port, host_port, image_id, container_id, created_at, updated_at FROM projects WHERE repo_name = ?
+`
+
+func (q *Queries) GetProjectByRepoName(ctx context.Context, repoName string) (Project, error) {
+	row := q.db.QueryRowContext(ctx, getProjectByRepoName, repoName)
+	var i Project
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.GithubUrl,
+		&i.RepoName,
+		&i.ContainerPort,
+		&i.HostPort,
+		&i.ImageID,
+		&i.ContainerID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateContainerId = `-- name: UpdateContainerId :exec
+UPDATE projects SET 
+  container_id = ?, 
+  updated_at = CURRENT_TIMESTAMP 
+WHERE id = ?
+`
+
+type UpdateContainerIdParams struct {
+	ContainerID sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateContainerId(ctx context.Context, arg UpdateContainerIdParams) error {
+	_, err := q.db.ExecContext(ctx, updateContainerId, arg.ContainerID, arg.ID)
+	return err
+}
+
+const updateImageId = `-- name: UpdateImageId :exec
+UPDATE projects SET 
+  image_id = ?, 
+  updated_at = CURRENT_TIMESTAMP 
+WHERE id = ?
+`
+
+type UpdateImageIdParams struct {
+	ImageID sql.NullString
+	ID      int64
+}
+
+func (q *Queries) UpdateImageId(ctx context.Context, arg UpdateImageIdParams) error {
+	_, err := q.db.ExecContext(ctx, updateImageId, arg.ImageID, arg.ID)
+	return err
+}
+
+const updateRepoName = `-- name: UpdateRepoName :exec
+UPDATE projects SET
+  repo_name = ?, 
+  updated_at = CURRENT_TIMESTAMP 
+WHERE id = ?
+`
+
+type UpdateRepoNameParams struct {
+	RepoName string
+	ID       int64
+}
+
+func (q *Queries) UpdateRepoName(ctx context.Context, arg UpdateRepoNameParams) error {
+	_, err := q.db.ExecContext(ctx, updateRepoName, arg.RepoName, arg.ID)
+	return err
 }

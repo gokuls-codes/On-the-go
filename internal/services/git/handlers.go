@@ -2,12 +2,14 @@ package git
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os/exec"
 
 	"github.com/docker/go-connections/nat"
+	"github.com/gokuls-codes/on-the-go/internal/db/sqlc"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/moby/moby/api/types/build"
@@ -45,6 +47,15 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	log.Println("Headers:", headers.Get("X-Hub-Signature"))
 
+	project, err := h.Store.GetProjectByRepoName(c.Request().Context(), repoName)
+
+	if err != nil {
+		log.Println("Error fetching project:", err)
+		return c.JSON(500, map[string]string{"error": "Project not found"})
+	}
+
+	log.Println("Project found:", project)
+
 	go func() {
 
 		cmd := exec.Command("git", "pull")
@@ -65,21 +76,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 		defer apiClient.Close()
 
-		containers, err := apiClient.ContainerList(context.Background(), container.ListOptions{})
-		if err != nil {
-			log.Println("Error listing containers:", err)
-			return
-		}
-
-		var containerId string
-
-		for _, container := range containers {
-			if container.Image == repoName {
-				containerId = container.ID
-				break
-			}
-		}
-
+		containerId := project.ContainerID.String
 		log.Println("Found existing container ID:", containerId)
 
 		if containerId != "" {
@@ -98,20 +95,7 @@ func (h *Handler) gitPush(c echo.Context) error {
 			log.Println("Container removed successfully")
 		}
 
-		images, err := apiClient.ImageList(context.Background(), image.ListOptions{All: true})
-		if err != nil {
-			log.Println("Error listing images:", err)
-			return
-		}
-
-		var imageId string
-
-		for _, image := range images {
-			log.Println("Image:", image.RepoTags, image.ID)
-			if len(image.RepoTags) > 0 && image.RepoTags[0] == fmt.Sprintf("%s:latest", repoName) {
-				imageId = image.ID
-			}
-		}
+		imageId := project.ImageID.String
 
 		log.Println("Found existing image ID:", imageId)
 
@@ -157,6 +141,16 @@ func (h *Handler) gitPush(c echo.Context) error {
 			// time.Sleep(200 * time.Millisecond)
 		}
 
+		err = h.Store.Queries.UpdateImageId(context.Background(), sqlc.UpdateImageIdParams{
+			ID:      project.ID,
+			ImageID: sql.NullString{String: repoName, Valid: true},
+		})
+
+		if err != nil {
+			log.Println("Updating image ID failed:", err)
+			return
+		}
+
 		containerResp, err := apiClient.ContainerCreate(
 			context.Background(),
 			&container.Config{
@@ -164,10 +158,10 @@ func (h *Handler) gitPush(c echo.Context) error {
 			},
 			&container.HostConfig{
 				PortBindings: nat.PortMap{
-					nat.Port("3000/tcp"): []nat.PortBinding{
+					nat.Port(fmt.Sprintf("%d/tcp", project.ContainerPort.Int64)): []nat.PortBinding{
 						{
 							HostIP:   "0.0.0.0",
-							HostPort: "8888",
+							HostPort: fmt.Sprintf("%d", project.HostPort.Int64),
 						},
 					},
 				},
@@ -181,6 +175,16 @@ func (h *Handler) gitPush(c echo.Context) error {
 			return
 		}
 		log.Println("Container created successfully")
+
+		err = h.Store.Queries.UpdateContainerId(context.Background(), sqlc.UpdateContainerIdParams{
+			ID:          project.ID,
+			ContainerID: sql.NullString{String: containerResp.ID, Valid: true},
+		})
+
+		if err != nil {
+			log.Println("Updating container ID failed:", err)
+			return
+		}
 
 		err = apiClient.ContainerStart(context.Background(), containerResp.ID, container.StartOptions{})
 
