@@ -33,14 +33,14 @@ func (h *Handler) gitPush(c echo.Context) error {
 
 	log.Println("Repository: ", payload.Repository.Name)
 
-	// jsonBytes, err := json.MarshalIndent(payload, "", "  ")
-	// if err != nil {
-	// 	return c.JSON(500, map[string]string{"error": "Failed to marshal payload"})
-	// }
+	jsonBytes, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		return c.JSON(500, map[string]string{"error": "Failed to marshal payload"})
+	}
 
-	// jsonString := string(jsonBytes)
+	jsonString := string(jsonBytes)
 
-	// log.Println("Git Push Payload:", jsonBytes)
+	log.Println("Git Push Payload:", jsonString)
 
 	headers := c.Request().Header
 	repoName := payload.Repository.Name
