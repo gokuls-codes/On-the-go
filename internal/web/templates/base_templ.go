@@ -13,6 +13,7 @@ import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/labe
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sidebar"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sheet"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/popover"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/chart"
 
 func Base() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -35,7 +36,7 @@ func Base() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"dark\"><head><meta charset=\"utf-8\"><title>On the Go</title><meta name=\"description\" content=\"A simple application to help with CI/CD when hosting your app in a VPS\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><script src=\"/static/htmx.min.js\"></script><script src=\"/static/script.js\" defer></script><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/icon?family=Material+Icons\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"dark\"><head><meta charset=\"utf-8\"><title>On the Go</title><meta name=\"description\" content=\"A simple application to help with CI/CD when hosting your app in a VPS\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><script src=\"/static/htmx.min.js\"></script><script src=\"/static/script.js\" defer></script><script src=\"/static/htmx-ext-sse.js\"></script><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/icon?family=Material+Icons\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -56,6 +57,10 @@ func Base() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = popover.Script().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = chart.Script().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

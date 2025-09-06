@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,4 +64,9 @@ func GetRepoName(url string) string {
 	url = strings.TrimSuffix(url, ".git")
 	parts := strings.Split(url, "/")
 	return parts[len(parts)-1]
+}
+
+func RoundFloatVal(val float64, precision uint) float64 {
+	ratio := math.Pow(10, float64(precision))
+	return math.Round(val*ratio) / ratio
 }

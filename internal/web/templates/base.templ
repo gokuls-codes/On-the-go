@@ -5,6 +5,8 @@ import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/labe
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sidebar"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/sheet"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/popover"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/chart"
+
 
 
 templ Base() {
@@ -22,6 +24,7 @@ templ Base() {
     <link href="/static/styles.css" rel="stylesheet" />
     <script src="/static/htmx.min.js"></script>
     <script src="/static/script.js" defer></script>
+    <script src="/static/htmx-ext-sse.js"></script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   @input.Script()
@@ -29,6 +32,8 @@ templ Base() {
   @sidebar.Script()
   @sheet.Script()
   @popover.Script()
+  @chart.Script()
+
 
   </head>
   <body class="dark bg-background text-foreground">

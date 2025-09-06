@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/icon"
 
 func DashboardPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -72,7 +73,17 @@ func DashboardPage() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div id=\"response\"></div></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\" w-full p-4 rounded-md space-y-2 border-border border\"><h3 class=\" text-lg font-semibold\">System Information</h3><div class=\" grid grid-cols-1 md:grid-cols-3 gap-4  h-60\" hx-ext=\"sse\" sse-connect=\"/dashboard/system/sse\" sse-swap=\"memory\"><div class=\" col-span-1 md:col-span-3  h-full flex items-center justify-center gap-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = icon.LoaderCircle(icon.Props{
+				Class: "animate-spin",
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\" text-xl font-light\">Loading...</span></div></div></div><div id=\"response\"></div></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

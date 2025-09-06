@@ -2,21 +2,34 @@ package pages
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/icon"
 
 templ DashboardPage() {
-    @templates.DashboardLayout() {
-        <main class="p-8 min-h-screen flex-1 space-y-8">
-            <div class=" w-full flex justify-between items-center">
-                <h2 class=" text-2xl font-bold">Dashboard</h2>
-                @button.Button(button.Props{
-                    Href: "/dashboard/projects/new",
-                }) {
-                    <i class="material-icons">add</i>
-                    <span>New Project</span>
-                }
-            </div>
-            <div id="response">
-            </div>
-        </main>
-    }
+	@templates.DashboardLayout() {
+		<main class="p-8 min-h-screen flex-1 space-y-8">
+			<div class=" w-full flex justify-between items-center">
+				<h2 class=" text-2xl font-bold">Dashboard</h2>
+				@button.Button(button.Props{
+					Href: "/dashboard/projects/new",
+				}) {
+					<i class="material-icons">add</i>
+					<span>New Project</span>
+				}
+			</div>
+			<div class=" w-full p-4 rounded-md space-y-2 border-border border">
+				<h3 class=" text-lg font-semibold">System Information</h3>
+				<div class=" grid grid-cols-1 md:grid-cols-3 gap-4  h-60" hx-ext="sse" sse-connect="/dashboard/system/sse" sse-swap="memory">
+					<div class=" col-span-1 md:col-span-3  h-full flex items-center justify-center gap-2">
+						@icon.LoaderCircle(icon.Props{
+                            Class: "animate-spin",
+                        }){}
+                        <span class=" text-xl font-light">
+                        Loading...
+                        </span>
+					</div>
+				</div>
+			</div>
+			<div id="response"></div>
+		</main>
+	}
 }

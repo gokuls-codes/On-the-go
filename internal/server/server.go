@@ -4,6 +4,7 @@ import (
 	"github.com/gokuls-codes/on-the-go/internal/db"
 	"github.com/gokuls-codes/on-the-go/internal/services/docker"
 	"github.com/gokuls-codes/on-the-go/internal/services/git"
+	"github.com/gokuls-codes/on-the-go/internal/services/system"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates/pages"
@@ -53,6 +54,10 @@ func (s *Server) Start() {
 		Store: s.store,
 	}
 	gitHandler.RegisterRoutes(gitGroup)
+
+	systemGroup := dashboardGroup.Group("/system")
+	systemHandler := system.Handler{}
+	systemHandler.RegisterRoutes(systemGroup)
 
 	e.Logger.Fatal(e.Start(":" + s.port))
 }

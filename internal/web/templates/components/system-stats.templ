@@ -1,0 +1,48 @@
+package components
+
+import "github.com/gokuls-codes/on-the-go/internal/utils"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/chart"
+
+templ SystemStatsComponent(cpuUsage float64, memoryUsage float64) {
+		<div class=" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4">
+            
+			<h4 class=" font-medium">CPU</h4>
+            @chart.Chart(chart.Props{
+				Variant:    chart.VariantDoughnut,
+				ShowLegend: false,
+                Class: " max-h-24 max-w-24",
+				Data: chart.Data{
+					Labels: []string{"Used", "Free"},
+					Datasets: []chart.Dataset{
+						{
+							Data:  []float64{cpuUsage, 100 - cpuUsage},
+							Label: "CPU",
+						},
+					},
+				},
+			})
+			<p id="cpuUsage" class=" text-2xl">{utils.RoundFloatVal(cpuUsage, 2)}%</p>
+		</div>
+		<div class=" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4">
+			<h4 class=" font-medium">Memory</h4>
+            @chart.Chart(chart.Props{
+				Variant:    chart.VariantDoughnut,
+				ShowLegend: false,
+                Class: " max-h-24 max-w-24",
+				Data: chart.Data{
+					Labels: []string{"Used", "Free"},
+					Datasets: []chart.Dataset{
+						{
+							Data:  []float64{memoryUsage, 100 - memoryUsage},
+							Label: "Memory",
+						},
+					},
+				},
+			})
+			<p id="memoryUsage" class=" text-2xl">{utils.RoundFloatVal(memoryUsage, 2)}%</p>
+		</div>
+		<div class=" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4">
+			<h4 class=" font-medium">Disk</h4>
+			<p id="diskUsage" class=" text-2xl">--%</p>
+		</div>
+}
