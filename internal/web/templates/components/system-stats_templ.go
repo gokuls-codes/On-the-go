@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/gokuls-codes/on-the-go/internal/utils"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/chart"
 
-func SystemStatsComponent(cpuUsage float64, memoryUsage float64) templ.Component {
+func SystemStatsComponent(cpuUsage float64, memoryUsage float64, diskUsage float64) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -100,7 +100,41 @@ func SystemStatsComponent(cpuUsage float64, memoryUsage float64) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "%</p></div><div class=\" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4\"><h4 class=\" font-medium\">Disk</h4><p id=\"diskUsage\" class=\" text-2xl\">--%</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "%</p></div><div class=\" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4\"><h4 class=\" font-medium\">Disk</h4>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = chart.Chart(chart.Props{
+			Variant:    chart.VariantDoughnut,
+			ShowLegend: false,
+			Class:      " max-h-24 max-w-24",
+			Data: chart.Data{
+				Labels: []string{"Used", "Free"},
+				Datasets: []chart.Dataset{
+					{
+						Data:  []float64{memoryUsage, 100 - diskUsage},
+						Label: "Storage",
+					},
+				},
+			},
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p id=\"diskUsage\" class=\" text-2xl\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(utils.RoundFloatVal(diskUsage, 2))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/components/system-stats.templ`, Line: 60, Col: 73}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "%</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

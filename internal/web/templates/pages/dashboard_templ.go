@@ -73,7 +73,7 @@ func DashboardPage() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\" w-full p-4 rounded-md space-y-2 border-border border\"><h3 class=\" text-lg font-semibold\">System Information</h3><div class=\" grid grid-cols-1 md:grid-cols-3 gap-4  h-60\" hx-ext=\"sse\" sse-connect=\"/dashboard/system/sse\" sse-swap=\"memory\"><div class=\" col-span-1 md:col-span-3  h-full flex items-center justify-center gap-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\" w-full p-4 rounded-md space-y-2 border-border border\"><h3 class=\" text-lg font-semibold\">System Information</h3><div class=\" grid grid-cols-1 md:grid-cols-3 gap-4  h-60\" hx-ext=\"sse\" sse-connect=\"/dashboard/system/sse\" sse-swap=\"system-stats\"><div class=\" col-span-1 md:col-span-3  h-full flex items-center justify-center gap-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
