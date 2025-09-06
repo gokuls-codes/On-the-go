@@ -42,31 +42,8 @@ func (h *Handler) memoryInfoSSe(c echo.Context) error {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
-
-	var buf bytes.Buffer
-
-	memory, _ := mem.VirtualMemory()
-	totalCpuPercent, _ := cpu.Percent(1*time.Second, false)
-	diskInfo, _ := disk.Usage("/")
-
-	err := components.SystemStatsComponent(totalCpuPercent[0], memory.UsedPercent, diskInfo.UsedPercent).Render(c.Request().Context(), &buf)
-
-	if err != nil {
-		log.Printf("Error rendering template: %v\n", err)
-		return errors.New("error rendering template")
-	}
-
-	event := utils.Event{
-		Event: []byte("system-stats"),
-		Data:  buf.Bytes(),
-	}
-	if err := event.MarshalTo(w); err != nil {
-		return err
-	}
-
-	w.Flush()
 
 	for {
 		select {
