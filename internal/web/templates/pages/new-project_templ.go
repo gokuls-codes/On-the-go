@@ -46,7 +46,7 @@ func NewProjectPage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"p-8 min-h-screen flex-1 space-y-8\"><div class=\" w-full flex justify-between items-center\"><h2 class=\" text-2xl font-bold\">New Project</h2></div><form hx-post=\"/dashboard/projects\" class=\" w-full max-w-lg space-y-4\"><div class=\" space-y-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"p-8 min-h-screen flex-1 space-y-8\"><div class=\" w-full flex justify-between items-center\"><h2 class=\" text-2xl font-bold\">New Project</h2></div><form hx-post=\"/dashboard/projects\" class=\" w-full max-w-lg space-y-4\" hx-swap=\"outerHTML\"><div class=\" space-y-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

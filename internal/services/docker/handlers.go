@@ -118,6 +118,7 @@ func (h *Handler) createProject(c echo.Context) error {
 		HostPort:      int64(p.HostPort),
 	}
 	project, err := h.Store.CreateProject(c.Request().Context(), params)
+	projectChan := h.MessageQ.CreateChannel(fmt.Sprintf("%d", project.ID))
 
 	if err != nil {
 		log.Println(err)
@@ -125,18 +126,22 @@ func (h *Handler) createProject(c echo.Context) error {
 	}
 
 	go func() {
+		defer h.MessageQ.RemoveChannel(fmt.Sprintf("%d", project.ID))
+
 		targetDir := "../otg-projects/"
 
 		cmd := exec.Command("git", "clone", p.GitHubURL, targetDir+repoName)
 		output, err := cmd.CombinedOutput()
 
 		if err != nil {
+			projectChan <- fmt.Sprintf("Git clone failed: %s", string(output))
 			log.Printf("Git clone failed: %s", string(output))
 			return
 		}
 
 		apiClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		if err != nil {
+			projectChan <- fmt.Sprintf("Docker client creation failed: %v", err)
 			log.Println(err)
 			return
 		}
@@ -145,6 +150,7 @@ func (h *Handler) createProject(c echo.Context) error {
 
 		buildContext, err := utils.TarDirectory(targetDir + repoName)
 		if err != nil {
+			projectChan <- fmt.Sprintf("Tar directory failed: %v", err)
 			log.Println(err)
 			return
 		}
@@ -158,6 +164,7 @@ func (h *Handler) createProject(c echo.Context) error {
 		response, err := apiClient.ImageBuild(context.Background(), buildContext, buildOptions)
 
 		if err != nil {
+			projectChan <- fmt.Sprintf("Image build failed: %v", err)
 			log.Println(err)
 			return
 		}
@@ -166,9 +173,11 @@ func (h *Handler) createProject(c echo.Context) error {
 		for decoder.More() {
 			var msg map[string]interface{}
 			if err := decoder.Decode(&msg); err != nil {
+				projectChan <- fmt.Sprintf("Image build failed: %v", err)
 				log.Println(err)
 			}
 			if stream, ok := msg["stream"].(string); ok {
+				projectChan <- stream
 				log.Println(stream)
 			}
 			// time.Sleep(200 * time.Millisecond)
@@ -180,6 +189,7 @@ func (h *Handler) createProject(c echo.Context) error {
 		})
 
 		if err != nil {
+			projectChan <- fmt.Sprintf("Updating image ID failed: %v", err)
 			log.Println("Updating image ID failed:", err)
 			return
 		}
@@ -204,6 +214,7 @@ func (h *Handler) createProject(c echo.Context) error {
 		)
 
 		if err != nil {
+			projectChan <- fmt.Sprintf("Container creation failed: %v", err)
 			log.Println(err)
 			return
 		}
@@ -214,6 +225,7 @@ func (h *Handler) createProject(c echo.Context) error {
 		})
 
 		if err != nil {
+			projectChan <- fmt.Sprintf("Updating container ID failed: %v", err)
 			log.Println("Updating container ID failed:", err)
 			return
 		}
@@ -221,13 +233,14 @@ func (h *Handler) createProject(c echo.Context) error {
 		err = apiClient.ContainerStart(context.Background(), containerResp.ID, container.StartOptions{})
 
 		if err != nil {
+			projectChan <- fmt.Sprintf("Starting container failed: %v", err)
 			log.Println(err)
 			return
 		}
 
 	}()
 
-	return c.JSON(200, project)
+	return utils.Render(c, components.LogSSE(project.Name, fmt.Sprintf("/dashboard/sse/project/%d/logs", project.ID)))
 }
 
 func (h *Handler) getEnvVarRow(c echo.Context) error {

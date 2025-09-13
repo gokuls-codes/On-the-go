@@ -2,7 +2,7 @@ package pages
 
 import "github.com/gokuls-codes/on-the-go/internal/web/templates"
 import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/button"
-import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/icon"
+import "github.com/gokuls-codes/on-the-go/internal/web/templates/components/skeleton"
 
 templ DashboardPage() {
 	@templates.DashboardLayout() {
@@ -16,16 +16,41 @@ templ DashboardPage() {
 					<span>New Project</span>
 				}
 			</div>
-			<div class=" w-full p-4 rounded-md space-y-2 border-border border">
+			<div class=" w-full space-y-2">
 				<h3 class=" text-lg font-semibold">System Information</h3>
-				<div class=" grid grid-cols-1 md:grid-cols-3 gap-4  h-60" hx-ext="sse" sse-connect="/dashboard/system/sse" sse-swap="system-stats">
-					<div class=" col-span-1 md:col-span-3  h-full flex items-center justify-center gap-2">
-						@icon.LoaderCircle(icon.Props{
-                            Class: "animate-spin",
-                        }){}
-                        <span class=" text-xl font-light">
-                        Loading...
-                        </span>
+				<div class=" grid grid-cols-1 md:grid-cols-3 gap-4" hx-ext="sse" sse-connect="/dashboard/system/sse" sse-swap="system-stats">
+					<div class=" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4">
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-6 w-24",
+						})
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-24 w-24",
+						})
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-8 w-24",
+						})
+					</div>
+					<div class=" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4">
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-6 w-24",
+						})
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-24 w-24",
+						})
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-8 w-24",
+						})
+					</div>
+					<div class=" p-4 rounded-md shadow-sm h-full w-full border-border border flex flex-col items-center justify-center gap-4">
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-6 w-24",
+						})
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-24 w-24",
+						})
+						@skeleton.Skeleton(skeleton.Props{
+							Class: "h-8 w-24",
+						})
 					</div>
 				</div>
 			</div>

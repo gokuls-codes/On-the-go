@@ -5,6 +5,7 @@ import (
 
 	"github.com/gokuls-codes/on-the-go/internal/config"
 	"github.com/gokuls-codes/on-the-go/internal/db"
+	"github.com/gokuls-codes/on-the-go/internal/messageq"
 	"github.com/gokuls-codes/on-the-go/internal/server"
 )
 
@@ -16,6 +17,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := server.NewServer(config.Port, store)
+	messageq := messageq.NewMessageQ()
+
+	server := server.NewServer(config.Port, store, messageq)
 	server.Start()
 }

@@ -2,8 +2,10 @@ package server
 
 import (
 	"github.com/gokuls-codes/on-the-go/internal/db"
+	"github.com/gokuls-codes/on-the-go/internal/messageq"
 	"github.com/gokuls-codes/on-the-go/internal/services/docker"
 	"github.com/gokuls-codes/on-the-go/internal/services/git"
+	"github.com/gokuls-codes/on-the-go/internal/services/sse"
 	"github.com/gokuls-codes/on-the-go/internal/services/system"
 	"github.com/gokuls-codes/on-the-go/internal/utils"
 	"github.com/gokuls-codes/on-the-go/internal/web/templates"
@@ -13,12 +15,13 @@ import (
 )
 
 type Server struct {
-	port  string
-	store *db.Store
+	port     string
+	store    *db.Store
+	messageq *messageq.MessageQ
 }
 
-func NewServer(port string, store *db.Store) *Server {
-	return &Server{port: port, store: store}
+func NewServer(port string, store *db.Store, messageq *messageq.MessageQ) *Server {
+	return &Server{port: port, store: store, messageq: messageq}
 }
 
 func (s *Server) Start() {
@@ -45,7 +48,8 @@ func (s *Server) Start() {
 	})
 
 	dockerHandler := docker.Handler{
-		Store: s.store,
+		Store:    s.store,
+		MessageQ: s.messageq,
 	}
 	dockerHandler.RegisterRoutes(dashboardGroup)
 
@@ -58,6 +62,12 @@ func (s *Server) Start() {
 	systemGroup := dashboardGroup.Group("/system")
 	systemHandler := system.Handler{}
 	systemHandler.RegisterRoutes(systemGroup)
+
+	sseGroup := dashboardGroup.Group("/sse")
+	sseHandler := sse.Handler{
+		MessageQ: s.messageq,
+	}
+	sseHandler.RegisterRoutes(sseGroup)
 
 	e.Logger.Fatal(e.Start(":" + s.port))
 }

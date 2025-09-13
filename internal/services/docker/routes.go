@@ -2,11 +2,13 @@ package docker
 
 import (
 	"github.com/gokuls-codes/on-the-go/internal/db"
+	"github.com/gokuls-codes/on-the-go/internal/messageq"
 	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
-	Store *db.Store
+	Store    *db.Store
+	MessageQ *messageq.MessageQ
 }
 
 func (h *Handler) RegisterRoutes(group *echo.Group) {

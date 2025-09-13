@@ -11,7 +11,7 @@ templ NewProjectPage() {
 			<div class=" w-full flex justify-between items-center">
 				<h2 class=" text-2xl font-bold">New Project</h2>
 			</div>
-			<form hx-post="/dashboard/projects" class=" w-full max-w-lg space-y-4">
+			<form hx-post="/dashboard/projects" class=" w-full max-w-lg space-y-4" hx-swap="outerHTML">
 				<div class=" space-y-2">
 					@label.Label(label.Props{
 						For: "name",
